@@ -1,0 +1,7 @@
+{
+  "translation_key": "shape.blockwheel.wall",
+  "units": 2,
+  "order": 30,
+  "suffixes": ["_wall"],
+  "block_tags": ["minecraft:walls"]
+}

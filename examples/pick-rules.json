@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "enabled": true,
+  "include_log_defaults": true,
+  "include_anvil_defaults": true,
+  "include_copper_defaults": true,
+  "rules": [
+    {
+      "target": "minecraft:stripped_oak_wood",
+      "fallbacks": [
+        "minecraft:stripped_oak_log",
+        "minecraft:oak_wood",
+        "minecraft:oak_log"
+      ]
+    }
+  ]
+}

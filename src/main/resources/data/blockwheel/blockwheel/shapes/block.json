@@ -1,0 +1,7 @@
+{
+  "translation_key": "shape.blockwheel.block",
+  "units": 2,
+  "order": 0,
+  "base": true,
+  "base_suffixes": ["_planks", "", "_block", "s"]
+}

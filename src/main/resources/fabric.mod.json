@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "id": "blockwheel",
+  "version": "${version}",
+  "name": "Blockwheel",
+  "description": "Block-family reshaping and inventory-based Builder Mode.",
+  "authors": ["Blockwheel contributors"],
+  "license": "MIT",
+  "environment": "*",
+  "mixins": ["blockwheel.mixins.json", {"config": "blockwheel.client.mixins.json", "environment": "client"}],
+  "entrypoints": {
+    "main": ["dev.blockwheel.Blockwheel"],
+    "client": ["dev.blockwheel.client.BlockwheelClient"],
+    "modmenu": ["dev.blockwheel.client.compat.BlockwheelModMenu"]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "minecraft": "~26.2",
+    "java": ">=25",
+    "fabric-api": ">=${fabric_api_version}"
+  }
+}

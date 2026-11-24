@@ -1,0 +1,7 @@
+{
+  "required": true,
+  "package": "dev.blockwheel.gametest.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": ["CursorCaptureTestMixin", "SelectionSoundTestMixin", "SoundVolumeAccessor", "FeedbackOverlayTestMixin"],
+  "injectors": {"defaultRequire": 1}
+}

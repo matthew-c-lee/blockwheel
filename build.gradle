@@ -1,0 +1,109 @@
+plugins {
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
+}
+
+version = project.mod_version
+group = project.maven_group
+base { archivesName = 'blockwheel' }
+
+repositories {
+    mavenCentral()
+    maven {
+        name = 'Terraformers'
+        url = 'https://maven.terraformersmc.com/'
+        content { includeGroup 'com.terraformersmc' }
+    }
+}
+
+loom {
+    splitEnvironmentSourceSets()
+    mods {
+        blockwheel {
+            sourceSet sourceSets.main
+            sourceSet sourceSets.client
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+    compileOnly 'io.github.llamalad7:mixinextras-fabric:0.5.4'
+    compileOnly("com.terraformersmc:modmenu:${project.modmenu_version}") { transitive = false }
+    testImplementation platform('org.junit:junit-bom:5.12.2')
+    testImplementation 'org.junit.jupiter:junit-jupiter'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+processResources {
+    // Build and test against the supported baseline, and generate the dependency
+    // declarations from it so the packaged requirements cannot drift.
+    def metadata = [version: project.version,
+                    loader_version: project.loader_version,
+                    fabric_api_version: project.fabric_api_version]
+    inputs.properties metadata
+    filesMatching('fabric.mod.json') { expand metadata }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 25
+    options.encoding = 'UTF-8'
+}
+
+java {
+    withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
+
+test { useJUnitPlatform() }
+
+fabricApi {
+    configureTests {
+        createSourceSet = true
+        modId = 'blockwheel-test'
+        enableGameTests = true
+        enableClientGameTests = true
+        eula = true
+    }
+}
+
+// The visual regression fixtures exercise true GUI scale 4, which needs this viewport.
+loom.runs.configureEach { run ->
+    if (run.name == 'clientGameTest') run.programArgs('--width', '1600', '--height', '1000')
+}
+
+sourceSets.gametest.compileClasspath += sourceSets.client.output
+sourceSets.gametest.runtimeClasspath += sourceSets.client.output
+
+dependencies {
+    // Provided at runtime by Fabric Loader; needed only to compile the test fixture.
+    gametestCompileOnly 'io.github.llamalad7:mixinextras-fabric:0.5.4'
+    gametestCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}") { transitive = false }
+}
+
+// Optional test profile only; neither mod is bundled or required by Blockwheel.
+if (providers.gradleProperty('testTweakeroo').map { it.toBoolean() }.getOrElse(false)) {
+    repositories {
+        maven {
+            name = 'ModrinthTestProfile'
+            url = 'https://api.modrinth.com/maven'
+            content { includeGroup 'maven.modrinth' }
+        }
+    }
+    dependencies {
+        gametestRuntimeOnly 'maven.modrinth:t5wuYk45:tzGdG1Ri'
+        gametestRuntimeOnly 'maven.modrinth:GcWjdA9I:74gmDXEM'
+    }
+}
+
+if (providers.gradleProperty('testModMenu').map { it.toBoolean() }.getOrElse(false)) {
+    dependencies {
+        gametestRuntimeOnly("com.terraformersmc:modmenu:${project.modmenu_version}") { transitive = false }
+    }
+}
+
+jar {
+    from('LICENSE') { rename { "${it}_blockwheel" } }
+}

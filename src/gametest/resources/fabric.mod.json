@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "id": "blockwheel-test",
+  "version": "1.0.0",
+  "name": "Blockwheel integration tests",
+  "environment": "*",
+  "mixins": [
+    {
+      "config": "blockwheel-test.client.mixins.json",
+      "environment": "client"
+    }
+  ],
+  "entrypoints": {
+    "fabric-gametest": [
+      "dev.blockwheel.BlockwheelGameTests",
+      "dev.blockwheel.InventoryRoutingTests",
+      "dev.blockwheel.BuilderGameTests",
+      "dev.blockwheel.ShulkerSupplyGameTests",
+      "dev.blockwheel.TemplateDepositGameTests",
+      "dev.blockwheel.RestockGameTests",
+      "dev.blockwheel.SmartPickGameTests",
+      "dev.blockwheel.AlternateGameTests",
+      "dev.blockwheel.StatePickGameTests",
+      "dev.blockwheel.WoodGameTests",
+      "dev.blockwheel.SignGameTests"
+    ],
+    "fabric-client-gametest": [
+      "dev.blockwheel.BlockwheelClientTests",
+      "dev.blockwheel.BuilderClientTests",
+      "dev.blockwheel.ShulkerClientTests",
+      "dev.blockwheel.ExactPickClientTests",
+      "dev.blockwheel.UiClientTests",
+      "dev.blockwheel.HotbarStyleClientTests",
+      "dev.blockwheel.ModMenuClientTests",
+      "dev.blockwheel.RestockClientTests",
+      "dev.blockwheel.SmartPickClientTests",
+      "dev.blockwheel.AlternateClientTests",
+      "dev.blockwheel.WoodClientTests",
+      "dev.blockwheel.SignClientTests"
+    ],
+    "main": [
+      "dev.blockwheel.BuilderTestContent"
+    ]
+  },
+  "depends": {
+    "blockwheel": "*",
+    "fabric-gametest-api-v1": "*"
+  }
+}

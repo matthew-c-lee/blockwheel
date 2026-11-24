@@ -1,0 +1,7 @@
+{
+  "translation_key": "shape.blockwheel.slab",
+  "units": 1,
+  "order": 20,
+  "suffixes": ["_slab"],
+  "block_tags": ["minecraft:slabs"]
+}

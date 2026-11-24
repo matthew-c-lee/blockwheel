@@ -1,0 +1,7 @@
+{
+  "translation_key": "shape.blockwheel-test.button",
+  "units": 1,
+  "order": 50,
+  "suffixes": ["_button"],
+  "block_tags": ["minecraft:buttons"]
+}

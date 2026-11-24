@@ -1,0 +1,7 @@
+{
+  "translation_key": "shape.blockwheel.stairs",
+  "units": 2,
+  "order": 10,
+  "suffixes": ["_stairs"],
+  "block_tags": ["minecraft:stairs"]
+}

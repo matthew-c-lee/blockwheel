@@ -1,0 +1,6 @@
+{
+  "translation_key": "shape.blockwheel.trapdoor",
+  "units": 6,
+  "order": 50,
+  "block_tags": ["minecraft:wooden_trapdoors"]
+}

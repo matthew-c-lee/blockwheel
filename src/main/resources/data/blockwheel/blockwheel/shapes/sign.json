@@ -1,0 +1,7 @@
+{
+  "translation_key": "shape.blockwheel.sign",
+  "units": 4,
+  "order": 60,
+  "block_tags": ["minecraft:standing_signs"],
+  "base_tags": ["minecraft:planks"]
+}

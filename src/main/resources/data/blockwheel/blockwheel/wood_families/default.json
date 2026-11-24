@@ -1,0 +1,13 @@
+{
+  "plank_suffix": "_planks",
+  "pairs": [
+    {"log_suffix": "_log", "wood_suffix": "_wood"},
+    {"log_suffix": "_stem", "wood_suffix": "_hyphae"}
+  ],
+  "planks_per_log": 4,
+  "log_input": 1,
+  "wood_output": 1,
+  "recipe_log_input": 4,
+  "recipe_wood_output": 3,
+  "require_recipes": true
+}

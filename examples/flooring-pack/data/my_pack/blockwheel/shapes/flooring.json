@@ -1,0 +1,7 @@
+{
+  "translation_key": "shape.my_pack.flooring",
+  "units": 1,
+  "order": 50,
+  "suffixes": ["_flooring"],
+  "block_tags": ["my_mod:flooring"]
+}

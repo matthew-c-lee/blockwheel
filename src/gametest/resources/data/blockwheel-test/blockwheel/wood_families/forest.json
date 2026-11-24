@@ -1,0 +1,9 @@
+{
+  "planks": "blockwheel-test:forest_planks",
+  "log": "blockwheel-test:forest_log",
+  "wood": "blockwheel-test:forest_wood",
+  "planks_per_log": 4,
+  "log_input": 4,
+  "wood_output": 3,
+  "require_recipes": false
+}

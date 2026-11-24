@@ -1,0 +1,7 @@
+{
+  "required": true,
+  "package": "dev.blockwheel.client.mixin",
+  "compatibilityLevel": "JAVA_25",
+  "client": ["ContainerScreenAccessor", "RecipeBookScreenAccessor", "TweakerooRestockMixin", "SupplyInventorySyncMixin", "SupplyMenuInputMixin", "RadialCrosshairMixin", "GuiGraphicsAccessor", "SpriteContentsAccessor"],
+  "injectors": {"defaultRequire": 1}
+}
