@@ -4,6 +4,8 @@
 
 A Fabric mod for **Minecraft Java Edition 26.2**. Hold **R** while holding a building block, point the mouse near another shape in its family, then release **R** to convert the stack. The floating cube-shaped slots combine Minecraft's gray hotbar styling with the supplied radial reference's geometry. The center stays empty.
 
+<img width="550" height="309" alt="wheel demonstration" src="https://github.com/user-attachments/assets/8e9a6eaf-b487-4091-b435-3812c669987b" />
+
 ## Install
 
 1. Install Fabric Loader **0.19.5 or newer** for Minecraft **26.2**, with **Java 25**.
