@@ -30,6 +30,8 @@ Builder Mode fills the shapes already in your hotbar, stores surplus pickups as 
 
 Direct placement into main storage keeps converted blocks in the slot you choose. Shift-click instead merges converted base blocks into existing matching storage stacks before using empty slots. Stack limits and fractional leftovers still apply.
 
+<img width="550" height="309" alt="builder mode compaction" src="https://github.com/user-attachments/assets/b63f7fdb-dca6-4364-b4db-db6b6c8dcd47" />
+
 **Shulker Supply starts OFF**, including for existing players. Enable it in the settings to restock and pick from carried shulkers and, optionally, shulkers in your personal ender chest without opening either container. Unnamed boxes may empty completely; named boxes always retain one item in each occupied source slot, including duplicate item types. Their layout, color, name and other components are preserved. There are no automatic deposits or changes to manual radial donors.
 
 Supply also restocks items without a conversion family, including netherrack and consumables. Those items are matched exactly, including components, and moved unchanged. Family building materials retain their existing shape conversions. Refills follow successful main-hand use, placement or completed eating; intentional drops and inventory moves remain deliberate.
