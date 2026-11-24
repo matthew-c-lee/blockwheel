@@ -36,6 +36,8 @@ Direct placement into main storage keeps converted blocks in the slot you choose
 
 Supply also restocks items without a conversion family, including netherrack and consumables. Those items are matched exactly, including components, and moved unchanged. Family building materials retain their existing shape conversions. Refills follow successful main-hand use, placement or completed eating; intentional drops and inventory moves remain deliberate.
 
+<img width="550" height="309" alt="shulker supply example" src="https://github.com/user-attachments/assets/96b81ff1-3e3c-4089-a375-38a7d99dda3d" />
+
 Hand restocking defaults to **fewer than 6 items remaining**, adding **up to 32 additional items** per refill. Both values are configurable from 1 to 99 in **Restock**; actual stack capacity and available supplies still limit the result. Five held blocks therefore become 37, rather than being topped up to 64. The **Non-blocks from shulkers** switch can exclude pearls, rockets and food from carried/ender shulker refills while retaining loose-inventory refills and building-block supplies. It starts on, preserving the existing behavior when Shulker Supply is enabled. See [hand restock settings](docs/RESTOCK.md).
 
 Blockwheel performs its own server-side restocking and does not read Tweakeroo's item filters, threshold or quantity. Tweakeroo is optional; its compatibility guard only prevents competing restocks while Builder Mode owns the main hand.
