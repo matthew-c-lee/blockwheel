@@ -211,12 +211,3 @@ See [data-pack documentation](docs/EXTENDING.md) and the ready-to-copy [flooring
 | `core/ManualConversionPlan.java` | Shared client/server one-stack target cap, exact family withdrawals and physical change |
 
 The client requests an operation; the server derives the actual inputs, targets and quantities. It never accepts a client-supplied item count, family, output item or exchange rate. A snapshot can be spent once and expires after two minutes. Data reloads and disconnects discard sessions.
-
-## References and license
-
-- [Fabric installation](https://fabricmc.net/use/installer/)
-- [Fabric API](https://modrinth.com/mod/fabric-api/versions?g=26.2)
-- [Fabric 26.2 changes](https://fabricmc.net/2026/06/15/262.html)
-- [Fabric 26.2 documentation](https://docs.fabricmc.net/26.2/)
-
-MIT licensed; see [LICENSE](LICENSE). Minecraft and Fabric are separate dependencies and are not redistributed in the download. The radial uses original code and Minecraft's item models; no Allumeria artwork is bundled.
