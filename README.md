@@ -1,8 +1,6 @@
 # Blockwheel
 
-**1.0.0 — initial public release.**
-
-A Fabric mod for **Minecraft Java Edition 26.2**. Hold **R** while holding a building block, point the mouse near another shape in its family, then release **R** to convert the stack. The floating cube-shaped slots combine Minecraft's gray hotbar styling with the supplied radial reference's geometry. The center stays empty.
+A Fabric mod for **Minecraft Java Edition 26.2**. Hold **R** while holding a building block, point the mouse near another shape in its family, then release **R** to convert the stack. The floating cube-shaped slots combine Minecraft's gray hotbar styling with the supplied radial reference's geometry.
 
 <img width="550" height="309" alt="wheel demonstration" src="https://github.com/user-attachments/assets/8e9a6eaf-b487-4091-b435-3812c669987b" />
 
