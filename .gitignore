@@ -4,3 +4,9 @@ run/
 run-*/
 .idea/
 *.iml
+.vscode/
+out/
+*.log
+hs_err_pid*
+__pycache__/
+AGENTS.md

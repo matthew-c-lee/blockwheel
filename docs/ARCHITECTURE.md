@@ -27,6 +27,8 @@ Manual conversion first applies held-source batching and its existing one-stack 
 
 Restock and family-aware pick request the active building shape. Shared acquisition withdraws permitted material, creates the requested form and stores exact physical change. Bounded exact withdrawal avoids overpayment when change cannot fit. A smaller fully validated output may succeed. Explicit pick permits hotbar material, including the selected source; automatic restock excludes other loose hotbar stacks.
 
+If the manual plan produces zero, `ConversionController` may use `BuilderInventory.retrieveExact` under the Builder/Supply/Ender/server gates. It reuses exact acquisition and pick's hand-displacement finalizer: withdraw existing targets up to the radial cap, store the original held stack in slots 9–35, then commit both changes atomically. No box-family conversion, loose other-hotbar/ender withdrawal, remote deposit or overflow drop occurs. `RadialScreen` submits zero-preview selections when Supply is enabled because remote contents are server-owned. Ordinary successful conversions retain their donor policy.
+
 ## Conservative main storage
 
 `StorageCompaction` permits an aggregate main-storage pool when its value is an exact number of logs, or its quantities exceed one actual stack. The latter adds exact source-count/stack-limit fractions rather than assuming 64. Default wood is 1:1 with logs; slabs need eight and plank-equivalent shapes need four. This gate applies only to log compaction; otherwise the original plank form is the secondary storage candidate, still subject to capacity and occupied-slot checks. Explicit custom ratios retain their own batch sizes.

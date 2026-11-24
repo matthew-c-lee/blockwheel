@@ -17,6 +17,7 @@
   "message.blockwheel.custom_data": "Reshaping requires an ordinary block stack without custom item data.",
   "message.blockwheel.changed": "Your held stack changed. Open the wheel again.",
   "message.blockwheel.need_batch": "You need %s input items for one complete batch.",
+  "message.blockwheel.retrieved": "Retrieved %s %s from stored supplies.",
   "message.blockwheel.server_missing": "This server also needs Blockwheel installed.",
   "message.blockwheel.converted": "Reshaped %s into %s %s",
   "ui.blockwheel.builder_on": "Builder Mode: ON",

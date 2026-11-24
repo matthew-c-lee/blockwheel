@@ -4,7 +4,7 @@ Shulker Supply extends Builder Mode's existing restocker and pick block. It with
 
 ## Enable it
 
-1. Install Blockwheel 1.0.0 on both client and server. The dependency minimums remain Fabric Loader 0.19.5, Fabric API 0.160.0+26.2 and Java 25.
+1. Install Blockwheel 1.0.1 on both client and server. The dependency minimums remain Fabric Loader 0.19.5, Fabric API 0.160.0+26.2 and Java 25.
 2. Open your inventory and left-click the Builder icon to enable **Builder Mode**.
 3. Right-click the Builder switch, select **Supply**, and enable **Shulker Supply**.
 4. Choose whether to enable remote ender chest access, **Pick from stored supplies**, **Show stored material totals** and **Non-blocks from shulkers**.
@@ -24,7 +24,7 @@ Turning off a parent feature stops its actions while keeping the saved suboption
 
 With Builder Mode, Shulker Supply and permitted Ender chest access enabled, a manual radial transaction returns leftover physical material to identical occupied slots inside named shulkers in your ender chest before using main inventory. For example, 64 stone made into 64 held slabs leave 32 stone; a ten-stone template becomes 42 stone. Multiple templates may accept the change up to their actual capacities. Anything unaccepted remains physical and follows the usual main-inventory/drop path. Empty slots, unnamed boxes, carried boxes and loose ender items are not destinations. Existing unrelated inventory is not swept, and no shape conversion is done while routing this change.
 
-The radial's consolidation sources remain loose main-inventory family items; enabling this destination does not make a manual conversion withdraw from shulkers.
+The radial's conversion donors remain loose main-inventory family items. If that plan cannot produce even one target, Builder Mode and Shulker Supply permit a separate exact-item retrieval from carried and permitted ender shulkers. Two held planks can retrieve existing logs, preserving both planks in main storage outside the hotbar. This fallback follows the supply tiers and named reserves, never transforms box contents, never uses loose other-hotbar/ender items, and aborts atomically if the displaced stack cannot fit main storage. Successful conversions do not use this fallback or top up from boxes.
 
 ## Which materials are used first
 
@@ -76,7 +76,7 @@ Restocking follows confirmed main-hand placement, successful item use or complet
 
 Exact requested items already in ordinary inventory retain vanilla pick behavior, and Creative pick remains vanilla. For a missing survival item, pick block uses main storage, compatible hotbar stacks and enabled supplies, aiming for up to one target stack. Family items may convert; items without a family require an exact item-and-component match and move unchanged. With remote access enabled, pick block considers loose ender items as well as ender shulkers. It first tries vanilla's suitable hotbar slot, then compatible family source slots if displaced items cannot fit. The source stack may itself become the target, including when it is selected and the whole inventory is full. Remaining source material and unrelated displaced items are preserved; unsafe plans do nothing. Displaced items are stored in main inventory, with no automatic deposits into the ender chest or shulkers.
 
-Manual hold-R conversion keeps its existing matching-main-inventory donor rule and never consumes shulker contents. Pickup routing and ordinary inventory normalization do not deposit into, sort or normalize boxes.
+Manual hold-R conversion keeps its existing main-inventory donor rules; only the failed-batch exact retrieval described above withdraws from enabled boxes. Pickup routing and ordinary inventory normalization do not deposit into, sort or normalize boxes.
 
 ## Material tooltips
 

@@ -271,14 +271,28 @@ public final class BuilderInventory {
         var material = materials.resolve(target);
         if (material == null && !policy.shulkers()) return null;
         var trial = new InventoryTransaction(inventory, policy.shulkers() && policy.ender() ? ender : null);
-        BiPredicate<InventoryTransaction, Integer> finish = (candidate, count) -> {
+        var finish = handDestination(slot, target);
+        return material == null ? acquireExact(trial, target, trial.limit(target), policy, finish)
+                : acquire(trial, material, trial.limit(target), policy, finish);
+    }
+
+    /** A failed radial batch may fetch existing targets, without converting stored family material. */
+    public Plan retrieveExact(Inventory inventory, Container ender, MaterialSupply.Policy policy, int slot,
+                              ItemStack target, int maximum) {
+        if (target.isEmpty() || slot < 0 || slot > 8 || maximum < 1) return null;
+        // Radial retrieval never spends other loose hotbar stacks or loose ender items.
+        var sources = new MaterialSupply.Policy(policy.shulkers(), policy.ender(), false, false);
+        var trial = new InventoryTransaction(inventory, sources.shulkers() && sources.ender() ? ender : null);
+        return acquireExact(trial, target, Math.min(maximum, trial.limit(target)), sources, handDestination(slot, target));
+    }
+
+    private static BiPredicate<InventoryTransaction, Integer> handDestination(int slot, ItemStack target) {
+        return (candidate, count) -> {
             var displaced = candidate.get(slot).copy();
             candidate.set(slot, ItemStack.EMPTY);
             if (!displaced.isEmpty() && !candidate.insert(displaced, 9, 36, true).isEmpty()) return false;
             candidate.set(slot, target.copyWithCount(count)); return true;
         };
-        return material == null ? acquireExact(trial, target, trial.limit(target), policy, finish)
-                : acquire(trial, material, trial.limit(target), policy, finish);
     }
 
     /** Exact refills and picks share withdrawal, reserves and nested transaction finalization. */

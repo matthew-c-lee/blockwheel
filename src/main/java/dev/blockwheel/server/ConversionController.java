@@ -102,6 +102,16 @@ public final class ConversionController {
         var plan = InventoryConversion.plan(player.getInventory(), session.slot(), session.family(), session.member(), target,
                 Blockwheel.BUILDERS.settings(player).enabled());
         if (plan.produced() == 0) {
+            var policy = Blockwheel.BUILDERS.supplyPolicy(player, false, false);
+            if (Blockwheel.BUILDERS.settings(player).enabled() && policy.shulkers()) {
+                var retrieval = Blockwheel.BUILDERS.planner(player).retrieveExact(player.getInventory(),
+                        policy.ender() ? player.getEnderChestInventory() : null, policy, session.slot(), new ItemStack(item), plan.handLimit());
+                if (retrieval != null && retrieval.transaction().commit()) {
+                    player.inventoryMenu.broadcastChanges();
+                    player.sendOverlayMessage(Component.translatable("message.blockwheel.retrieved", retrieval.count(), new ItemStack(item).getHoverName()));
+                    return;
+                }
+            }
             player.sendOverlayMessage(Component.translatable("message.blockwheel.need_batch",
                     ConversionPlan.minimumInput(session.member().shape().units(), target.shape().units())));
             return;

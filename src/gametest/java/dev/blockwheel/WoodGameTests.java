@@ -54,6 +54,97 @@ public final class WoodGameTests {
         var wheel = Blockwheel.CONVERSIONS.prepare(p, 0); if (wheel == null) throw new AssertionError("No wood wheel");
         Blockwheel.CONVERSIONS.convert(p, new Payloads.Convert(wheel.token(), shape));
     }
+    @GameTest public void incompleteRadialBatchRetrievesExactEnderLogsAndStoresPlanks(GameTestHelper test) {
+        var p = player(test, true);
+        Blockwheel.BUILDERS.configure(p, Blockwheel.BUILDERS.settings(p).withFeature(Feature.SHULKER_SUPPLY, true));
+        set(p, 0, Items.OAK_PLANKS, 2); set(p, 5, Items.OAK_LOG, 7);
+        var original = ShulkerSupplyGameTests.box(true, new ItemStack(Items.OAK_LOG, 64), ItemStack.EMPTY, new ItemStack(Items.OAK_LOG, 3));
+        p.getEnderChestInventory().setItem(0, original.copy());
+        convert(p, WoodFamilies.LOG);
+        var outer = p.getEnderChestInventory().getItem(0);
+        var contents = ShulkerSupplyGameTests.contents(outer);
+        test.assertTrue(p.getMainHandItem().is(Items.OAK_LOG) && p.getMainHandItem().getCount() == 64
+                && p.getInventory().getItem(9).is(Items.OAK_PLANKS) && p.getInventory().getItem(9).getCount() == 2
+                && p.getInventory().getItem(5).getCount() == 7 && contents.get(0).getCount() == 1
+                && contents.get(1).isEmpty() && contents.get(2).getCount() == 2,
+                "Incomplete radial batch lost planks, used another hotbar stack or broke per-slot named reserves");
+        var metadata = outer.copy(); metadata.set(DataComponents.CONTAINER, original.get(DataComponents.CONTAINER));
+        test.assertTrue(ItemStack.matches(original, metadata), "Radial retrieval changed outer shulker metadata"); test.succeed();
+    }
+    @GameTest public void radialRetrievalUsesCarriedSupplyBeforeEnderAndLeavesValidConversionsAlone(GameTestHelper test) {
+        var p = player(test, true);
+        Blockwheel.BUILDERS.configure(p, Blockwheel.BUILDERS.settings(p).withFeature(Feature.SHULKER_SUPPLY, true));
+        set(p, 0, Items.OAK_PLANKS, 2);
+        p.getInventory().setItem(10, ShulkerSupplyGameTests.box(false, new ItemStack(Items.OAK_LOG, 10)));
+        var remote = ShulkerSupplyGameTests.box(false, new ItemStack(Items.OAK_LOG, 64));
+        p.getEnderChestInventory().setItem(0, remote.copy()); convert(p, WoodFamilies.LOG);
+        test.assertTrue(p.getMainHandItem().getCount() == 64 && ShulkerSupplyGameTests.contents(p.getInventory().getItem(10)).get(0).isEmpty()
+                && ShulkerSupplyGameTests.contents(p.getEnderChestInventory().getItem(0)).get(0).getCount() == 10
+                && count(p, Items.OAK_PLANKS) == 2, "Radial retrieval ignored source order or lost the displaced stack");
+        p.getInventory().clearContent(); set(p, 0, Items.OAK_PLANKS, 4); p.getEnderChestInventory().setItem(0, remote.copy());
+        convert(p, WoodFamilies.LOG);
+        test.assertTrue(p.getMainHandItem().is(Items.OAK_LOG) && p.getMainHandItem().getCount() == 1
+                && ItemStack.matches(remote, p.getEnderChestInventory().getItem(0)), "Successful radial conversion unexpectedly consumed supply"); test.succeed();
+    }
+    @GameTest public void radialRetrievalRespectsBuilderSupplyAndRemoteGates(GameTestHelper test) {
+        var p = player(test, true);
+        var enabled = Blockwheel.BUILDERS.settings(p).withFeature(Feature.SHULKER_SUPPLY, true);
+        var original = ShulkerSupplyGameTests.box(false, new ItemStack(Items.OAK_LOG, 20));
+        p.getEnderChestInventory().setItem(0, original.copy()); set(p, 0, Items.OAK_PLANKS, 2);
+        for (var settings : java.util.List.of(enabled.withEnabled(false), enabled.withFeature(Feature.SHULKER_SUPPLY, false),
+                enabled.withFeature(Feature.ENDER_ACCESS, false))) {
+            Blockwheel.BUILDERS.configure(p, settings); convert(p, WoodFamilies.LOG);
+            test.assertTrue(p.getMainHandItem().is(Items.OAK_PLANKS) && p.getMainHandItem().getCount() == 2
+                    && ItemStack.matches(original, p.getEnderChestInventory().getItem(0)), "Radial retrieval bypassed a player setting");
+        }
+        boolean allowed = Blockwheel.BUILDERS.enderAllowed();
+        try {
+            Blockwheel.BUILDERS.configure(p, enabled);
+            Blockwheel.BUILDERS.setPolicy(new dev.blockwheel.server.BuilderServerConfig(false)); convert(p, WoodFamilies.LOG);
+            test.assertTrue(p.getMainHandItem().is(Items.OAK_PLANKS) && ItemStack.matches(original, p.getEnderChestInventory().getItem(0)),
+                    "Radial retrieval bypassed server ender policy");
+        } finally { Blockwheel.BUILDERS.setPolicy(new dev.blockwheel.server.BuilderServerConfig(allowed)); }
+        test.succeed();
+    }
+    @GameTest public void radialRetrievalRequiresExactUncustomizedTargetsAndPreservesTemplates(GameTestHelper test) {
+        var p = player(test, true);
+        Blockwheel.BUILDERS.configure(p, Blockwheel.BUILDERS.settings(p).withFeature(Feature.SHULKER_SUPPLY, true));
+        set(p, 0, Items.OAK_PLANKS, 2);
+        var custom = new ItemStack(Items.OAK_LOG, 12); custom.set(DataComponents.CUSTOM_NAME, Component.literal("Keep"));
+        var original = ShulkerSupplyGameTests.box(true, new ItemStack(Items.OAK_LOG, 1), new ItemStack(Items.OAK_WOOD, 12),
+                new ItemStack(Items.SPRUCE_LOG, 12), new ItemStack(Items.STRIPPED_OAK_LOG, 12), custom);
+        p.getEnderChestInventory().setItem(0, original.copy()); p.getEnderChestInventory().setItem(1, new ItemStack(Items.OAK_LOG, 64));
+        convert(p, WoodFamilies.LOG);
+        test.assertTrue(p.getMainHandItem().is(Items.OAK_PLANKS) && p.getMainHandItem().getCount() == 2
+                && ItemStack.matches(original, p.getEnderChestInventory().getItem(0)) && p.getEnderChestInventory().getItem(1).getCount() == 64,
+                "Radial fallback converted remote family material or used protected, customized or loose ender items"); test.succeed();
+    }
+    @GameTest public void radialRetrievalRejectsFullStorageButCanMergeDisplacedPlanks(GameTestHelper test) {
+        var p = player(test, true);
+        Blockwheel.BUILDERS.configure(p, Blockwheel.BUILDERS.settings(p).withFeature(Feature.SHULKER_SUPPLY, true));
+        for (int slot = 9; slot < 36; slot++) set(p, slot, Items.DIRT, 64);
+        set(p, 0, Items.OAK_PLANKS, 2);
+        var original = ShulkerSupplyGameTests.box(false, new ItemStack(Items.OAK_LOG, 8));
+        p.getEnderChestInventory().setItem(0, original.copy()); convert(p, WoodFamilies.LOG);
+        test.assertTrue(p.getMainHandItem().is(Items.OAK_PLANKS) && p.getMainHandItem().getCount() == 2
+                && ItemStack.matches(original, p.getEnderChestInventory().getItem(0)) && count(p, Items.OAK_LOG) == 0,
+                "Full storage caused radial retrieval to spend supply, overwrite or drop planks");
+        set(p, 9, Items.OAK_PLANKS, 1); convert(p, WoodFamilies.LOG);
+        test.assertTrue(p.getMainHandItem().is(Items.OAK_LOG) && p.getMainHandItem().getCount() == 8
+                && p.getInventory().getItem(9).getCount() == 3, "Radial retrieval failed to merge displaced planks in full storage"); test.succeed();
+    }
+    @GameTest public void staleRadialRetrievalRejectsBothHandAndShulkerWrites(GameTestHelper test) {
+        var p = player(test, true); set(p, 0, Items.OAK_PLANKS, 2);
+        var original = ShulkerSupplyGameTests.box(false, new ItemStack(Items.OAK_LOG, 8));
+        p.getEnderChestInventory().setItem(0, original.copy());
+        var plan = Blockwheel.BUILDERS.planner(p).retrieveExact(p.getInventory(), p.getEnderChestInventory(),
+                new dev.blockwheel.server.MaterialSupply.Policy(true, true, false), 0, new ItemStack(Items.OAK_LOG), 64);
+        test.assertTrue(plan != null, "Missing exact retrieval plan");
+        var changed = ShulkerSupplyGameTests.box(false, new ItemStack(Items.OAK_LOG, 9)); p.getEnderChestInventory().setItem(0, changed.copy());
+        test.assertTrue(!plan.transaction().commit() && p.getMainHandItem().is(Items.OAK_PLANKS)
+                && p.getMainHandItem().getCount() == 2 && p.getInventory().getItem(9).isEmpty()
+                && ItemStack.matches(changed, p.getEnderChestInventory().getItem(0)), "Stale radial retrieval partially committed"); test.succeed();
+    }
     @GameTest public void manualPlanksToWoodLeavesStoredLogsWithBuilderModeOff(GameTestHelper test) {
         var p = player(test, true); Blockwheel.BUILDERS.configure(p, Blockwheel.BUILDERS.settings(p).withEnabled(false));
         set(p, 0, Items.OAK_PLANKS, 64); set(p, 9, Items.OAK_LOG, 10); convert(p, WoodFamilies.WOOD);

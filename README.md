@@ -1,13 +1,13 @@
 # Blockwheel
 
-**1.0.0 — initial public release.**
+**1.0.1 — hotfix.**
 
 A Fabric mod for **Minecraft Java Edition 26.2**. Hold **R** while holding a building block, point the mouse near another shape in its family, then release **R** to convert the stack. The floating cube-shaped slots combine Minecraft's gray hotbar styling with the supplied radial reference's geometry. The center stays empty.
 
 ## Install
 
 1. Install Fabric Loader **0.19.5 or newer** for Minecraft **26.2**, with **Java 25**.
-2. Put `blockwheel-1.0.0.jar` and **Fabric API 0.160.0+26.2 or newer for 26.2** in your instance's `mods` folder.
+2. Put `blockwheel-1.0.1+mc26.2.jar` and **Fabric API 0.160.0+26.2 or newer for 26.2** in your instance's `mods` folder.
 3. For multiplayer, install both mods on the server as well. Singleplayer includes its own server automatically.
 
 Use a Fabric API build intended for **26.2**. This release does not target Bedrock, Forge, NeoForge, 26.1 or 26.3.
@@ -30,7 +30,7 @@ Builder Mode fills the shapes already in your hotbar, stores surplus pickups as 
 
 Direct placement into main storage keeps converted blocks in the slot you choose. Shift-click instead merges converted base blocks into existing matching storage stacks before using empty slots. Stack limits and fractional leftovers still apply.
 
-**Shulker Supply starts OFF**, including for existing players. Enable it in the settings to restock and pick from carried shulkers and, optionally, shulkers in your personal ender chest without opening either container. Unnamed boxes may empty completely; named boxes always retain one item in each occupied source slot, including duplicate item types. Their layout, color, name and other components are preserved. There are no automatic deposits or changes to manual radial donors.
+**Shulker Supply starts OFF**, including for existing players. Enable it in the settings to restock and pick from carried shulkers and, optionally, shulkers in your personal ender chest without opening either container. Unnamed boxes may empty completely; named boxes always retain one item in each occupied source slot, including duplicate item types. Their layout, color, name and other components are preserved. There are no automatic deposits.
 
 Supply also restocks items without a conversion family, including netherrack and consumables. Those items are matched exactly, including components, and moved unchanged. Family building materials retain their existing shape conversions. Refills follow successful main-hand use, placement or completed eating; intentional drops and inventory moves remain deliberate.
 
@@ -127,6 +127,8 @@ With **Builder Mode on**, the wheel consolidates compatible ordinary family mate
 
 With **Builder Mode off**, the wheel converts the held stack without merging stored target items or sweeping other family shapes. It may borrow only the matching source items needed to complete its last batch: one held slab plus one stored slab can still become one full block. Other stored source material stays put. The one-stack limit and physical base leftovers apply in both modes.
 
+If a selected shape cannot make even one complete item, **Builder Mode and Shulker Supply** allow the wheel to retrieve existing exact target items from enabled carried/ender shulkers. Two held oak planks can therefore become a hand of stored oak logs while both planks move into main inventory, outside the hotbar. Named slots each retain one item, ender access still needs player/server permission, and retrieval stops at one target stack. It does not convert other shapes inside boxes. If the displaced planks cannot fit main inventory, everything stays unchanged.
+
 Capped excess becomes exact base-first physical change; incomplete source items remain physical too. With Builder Mode, Shulker Supply and permitted ender chest access enabled, this transaction's leftover items first refill identical occupied slots inside named ender-chest shulkers. Empty slots, unnamed boxes and unrelated inventory items are left alone. Any material that cannot be stored there merges into main-storage stacks, then empty main slots, then drops at your feet if full. No remainder fills other hotbar slots or offhand, and no additional target stacks are produced. Selecting the current shape still cancels. These rules apply in Creative mode too.
 
 Conversions intentionally use the values above, rather than vanilla crafting yields. They are reversible. Only ordinary block stacks without custom item-component changes are accepted; named items, container contents and other custom data cannot be laundered through conversion. Changing your held item, count or selected slot invalidates an open wheel.
@@ -143,11 +145,12 @@ Explicit named-shulker filling is opportunistic: an existing twelve-log template
 
 ## Build and test
 
-Install JDK 25 and run:
+Install JDK 25 and set `JAVA_HOME` to its installation directory, or put its `bin` directory on PATH. A fresh checkout needs only Git, that JDK and internet access for the first dependency download; the checked-in wrapper supplies Gradle 9.5.1. Run:
 
 ```sh
 ./gradlew build
 ./gradlew runGameTest
+./gradlew releaseArtifacts
 ./gradlew runClientGameTest
 # Optional compatibility profile with the real Tweakeroo/MaLiLib 0.29.5 releases:
 ./gradlew runClientGameTest -PtestTweakeroo=true
@@ -155,7 +158,11 @@ Install JDK 25 and run:
 ./gradlew runClientGameTest -PtestModMenu=true
 ```
 
-On Windows use `gradlew.bat`. The mod is written to `build/libs/`. The client test needs an OpenGL-capable display; use Xvfb in a headless CI environment. Tests include a button form added entirely through data and a registered modded family with smaller stack limits and a three-unit flooring shape. Client scenarios cover inventory controls, native gameplay packets, saved preferences, dedicated-server reconnection and the radial. Test entrypoints, test data and optional compatibility dependencies are excluded from the release JAR.
+On Windows use `.\gradlew.bat`. `build` runs JUnit and Fabric server GameTests and writes production and sources JARs to `build/libs/`; `runGameTest` also runs the server integration suite on its own. `releaseArtifacts` builds and stages only those two JARs and `SHA256SUMS.txt` in `build/release/`. The installable file is `blockwheel-1.0.1+mc26.2.jar`; its internal mod version is `1.0.1`. No local tool paths or previous caches are required.
+
+The client test needs an OpenGL-capable display and a **1600×1000** viewport. Tests include a button form added entirely through data and a registered modded family with smaller stack limits and a three-unit flooring shape. Client scenarios cover inventory controls, native gameplay packets, saved preferences, dedicated-server reconnection and the radial. Test entrypoints, test data and optional compatibility dependencies are excluded from the release JAR.
+
+GitHub Actions runs the build, unit tests and server GameTests on every push/PR and manual dispatch. In **Actions → Build and test → successful run → Artifacts**, download **blockwheel-1.0.1+mc26.2**, extract it, and install the JAR without `-sources`. Client/render tests are opt-in under **Run workflow → client_tests**, with baseline, Mod Menu or Tweakeroo profiles; CI uses Xvfb/Mesa and checks captured frames. See [development and CI](docs/DEVELOPMENT.md) for setup, artifact contents and current validation limits.
 
 The hotbar fixture also reloads synthetic standard/HD resource packs, checks their border profiles and restores vanilla. Screenshot checks read native captures without editing them:
 

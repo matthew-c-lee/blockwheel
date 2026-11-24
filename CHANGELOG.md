@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.1 — Hotfix
+
+- When a radial conversion cannot make one complete target, enabled Shulker Supply can retrieve existing exact targets from eligible carried or ender-chest shulkers. Two held planks can retrieve stored logs while both planks move into main inventory outside the hotbar.
+- Preserve named-box reserves and metadata, respect supply/ender permissions, and leave everything unchanged if the displaced stack cannot fit. Successful conversions retain their existing behavior.
+- Include the Minecraft version in build filenames and provide production/sources JARs with SHA-256 checksums through GitHub Actions.
+
 ## 1.0.0 — Initial public release
 
 - Hold R, move toward a shape and release to transform compatible building blocks. Fixed directions, a neutral cancel area and Minecraft hotbar styling keep the wheel compact and predictable. Highlighted borders retain all three colored bands through the bottom corners. Resource-pack frame sampling separates outline/padding from the bevel while retaining vanilla's appearance.

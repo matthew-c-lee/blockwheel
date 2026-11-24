@@ -140,7 +140,9 @@ public final class RadialScreen extends Screen {
         finished = true;
         if (minecraft.isWindowActive() && selected >= 0 && selected < optionCount()) {
             var option = option(selected);
-            if (!current(option) && plan(option).produced() > 0 && ClientPlayNetworking.canSend(Payloads.Convert.TYPE)) {
+            // Stored supplies are server-owned; a zero local preview cannot rule out exact retrieval.
+            boolean supply = BuilderClient.settings().shulkerSupply();
+            if (!current(option) && (plan(option).produced() > 0 || supply) && ClientPlayNetworking.canSend(Payloads.Convert.TYPE)) {
                 ClientPlayNetworking.send(new Payloads.Convert(wheel.token(), option.shapeId()));
             }
         }

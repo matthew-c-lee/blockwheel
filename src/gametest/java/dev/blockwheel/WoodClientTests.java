@@ -111,6 +111,15 @@ public final class WoodClientTests implements FabricClientGameTest {
                 context.clickScreenButton("Done"); context.waitFor(client -> client.gui.screen() == null);
                 var preferences = BuilderClient.settings().withFeature(Feature.NORMALIZE, true).withFeature(Feature.PICKUP, false).withFeature(Feature.SHULKER_SUPPLY, true);
                 context.runOnClient(client -> BuilderClient.request(preferences)); context.waitFor(client -> BuilderClient.settings().equals(preferences));
+                seed(context, server, connection, p -> {
+                    set(p, 0, Items.OAK_PLANKS, 2); p.getEnderChestInventory().clearContent();
+                    p.getEnderChestInventory().setItem(0, ShulkerSupplyGameTests.box(true, new ItemStack(Items.OAK_LOG, 12)));
+                });
+                open(context); point(context, -24, -24); selected(context, "Log"); release(context); held(context, Items.OAK_LOG, 11);
+                if (!server.computeOnServer(value -> connection.getServerPlayer().getInventory().getItem(9).is(Items.OAK_PLANKS)
+                        && connection.getServerPlayer().getInventory().getItem(9).getCount() == 2
+                        && ShulkerSupplyGameTests.contents(connection.getServerPlayer().getEnderChestInventory().getItem(0)).get(0).getCount() == 1))
+                    throw new AssertionError("Zero-preview radial release failed to fetch stored logs and preserve planks");
                 seed(context, server, connection, p -> { set(p, 0, Items.OAK_STAIRS, 64); set(p, 9, Items.OAK_LOG, 44); });
                 open(context); point(context, -24, -24); selected(context, "Log"); release(context); held(context, Items.OAK_LOG, 60);
                 if (!server.computeOnServer(value -> connection.getServerPlayer().getInventory().getItem(9).isEmpty()))
