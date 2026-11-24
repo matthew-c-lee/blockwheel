@@ -1,8 +1,12 @@
 # Blockwheel
 
+<<<<<<< HEAD
 **1.0.1 — hotfix.**
+=======
+A Fabric mod for **Minecraft Java Edition 26.2**. Hold **R** while holding a building block, point the mouse near another shape in its family, then release **R** to convert the stack. The floating cube-shaped slots combine Minecraft's gray hotbar styling with the supplied radial reference's geometry.
+>>>>>>> 6e7e577d910e26c86c43a23a7df2547c773c962b
 
-A Fabric mod for **Minecraft Java Edition 26.2**. Hold **R** while holding a building block, point the mouse near another shape in its family, then release **R** to convert the stack. The floating cube-shaped slots combine Minecraft's gray hotbar styling with the supplied radial reference's geometry. The center stays empty.
+<img width="550" height="309" alt="wheel demonstration" src="https://github.com/user-attachments/assets/8e9a6eaf-b487-4091-b435-3812c669987b" />
 
 ## Install
 
@@ -30,9 +34,17 @@ Builder Mode fills the shapes already in your hotbar, stores surplus pickups as 
 
 Direct placement into main storage keeps converted blocks in the slot you choose. Shift-click instead merges converted base blocks into existing matching storage stacks before using empty slots. Stack limits and fractional leftovers still apply.
 
+<<<<<<< HEAD
 **Shulker Supply starts OFF**, including for existing players. Enable it in the settings to restock and pick from carried shulkers and, optionally, shulkers in your personal ender chest without opening either container. Unnamed boxes may empty completely; named boxes always retain one item in each occupied source slot, including duplicate item types. Their layout, color, name and other components are preserved. There are no automatic deposits.
+=======
+<img width="550" height="309" alt="builder mode compaction" src="https://github.com/user-attachments/assets/b63f7fdb-dca6-4364-b4db-db6b6c8dcd47" />
+
+**Shulker Supply starts OFF**, including for existing players. Enable it in the settings to restock and pick from carried shulkers and, optionally, shulkers in your personal ender chest without opening either container. Unnamed boxes may empty completely; named boxes always retain one item in each occupied source slot, including duplicate item types. Their layout, color, name and other components are preserved. There are no automatic deposits or changes to manual radial donors.
+>>>>>>> 6e7e577d910e26c86c43a23a7df2547c773c962b
 
 Supply also restocks items without a conversion family, including netherrack and consumables. Those items are matched exactly, including components, and moved unchanged. Family building materials retain their existing shape conversions. Refills follow successful main-hand use, placement or completed eating; intentional drops and inventory moves remain deliberate.
+
+<img width="550" height="309" alt="shulker supply example" src="https://github.com/user-attachments/assets/96b81ff1-3e3c-4089-a375-38a7d99dda3d" />
 
 Hand restocking defaults to **fewer than 6 items remaining**, adding **up to 32 additional items** per refill. Both values are configurable from 1 to 99 in **Restock**; actual stack capacity and available supplies still limit the result. Five held blocks therefore become 37, rather than being topped up to 64. The **Non-blocks from shulkers** switch can exclude pearls, rockets and food from carried/ender shulker refills while retaining loose-inventory refills and building-block supplies. It starts on, preserving the existing behavior when Shulker Supply is enabled. See [hand restock settings](docs/RESTOCK.md).
 
@@ -216,12 +228,3 @@ See [data-pack documentation](docs/EXTENDING.md) and the ready-to-copy [flooring
 | `core/ManualConversionPlan.java` | Shared client/server one-stack target cap, exact family withdrawals and physical change |
 
 The client requests an operation; the server derives the actual inputs, targets and quantities. It never accepts a client-supplied item count, family, output item or exchange rate. A snapshot can be spent once and expires after two minutes. Data reloads and disconnects discard sessions.
-
-## References and license
-
-- [Fabric installation](https://fabricmc.net/use/installer/)
-- [Fabric API](https://modrinth.com/mod/fabric-api/versions?g=26.2)
-- [Fabric 26.2 changes](https://fabricmc.net/2026/06/15/262.html)
-- [Fabric 26.2 documentation](https://docs.fabricmc.net/26.2/)
-
-MIT licensed; see [LICENSE](LICENSE). Minecraft and Fabric are separate dependencies and are not redistributed in the download. The radial uses original code and Minecraft's item models; no Allumeria artwork is bundled.
