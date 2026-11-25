@@ -9,6 +9,36 @@ import static org.junit.jupiter.api.Assertions.*;
 class RadialPagesTest {
     private RadialPages pages(List<String> ids) { return new RadialPages(ids.size(), ids::get, RadialPages.STANDARD_POSITIONS); }
 
+    @Test void fenceGateSharesFenceNodeWithoutAddingPagesOrMovingWoodForms() {
+        var ids = List.of("blockwheel:block", "blockwheel:stairs", "blockwheel:slab", RadialPages.FENCE, RadialPages.FENCE_GATE,
+                "blockwheel:sign", "blockwheel:trapdoor", WoodFamilies.LOG, WoodFamilies.WOOD);
+        var pages = pages(ids);
+        assertEquals(1, pages.size()); assertEquals(8, pages.slots(0));
+        assertEquals(2, pages.variants(0, 4));
+        assertEquals(RadialPages.FENCE, ids.get(pages.choice(0, 4, 0)));
+        assertEquals(RadialPages.FENCE_GATE, ids.get(pages.choice(0, 4, 1)));
+        assertEquals(RadialPages.FENCE, ids.get(pages.choice(0, 4, 2)));
+        assertEquals(RadialPages.FENCE_GATE, ids.get(pages.choice(0, 4, -1)));
+        assertEquals("blockwheel:sign", ids.get(pages.choice(0, 5, 1)));
+        assertEquals("blockwheel:trapdoor", ids.get(pages.choice(0, 3, 1)));
+    }
+    @Test void fenceGateStaysWithFenceWhenWallOwnsDown() {
+        var ids = List.of("blockwheel:block", "blockwheel:stairs", "blockwheel:slab", "blockwheel:wall", RadialPages.FENCE_GATE, RadialPages.FENCE);
+        var pages = pages(ids);
+        assertEquals("blockwheel:wall", ids.get(pages.choice(0, 4)));
+        assertEquals(RadialPages.FENCE, ids.get(pages.choice(0, 5)));
+        assertEquals(RadialPages.FENCE_GATE, ids.get(pages.choice(0, 5, 1)));
+        assertEquals(1, pages.size());
+    }
+    @Test void gateOnlyFamiliesRemainReachableAndFenceOnlyFamiliesDoNotGainVariants() {
+        var gateIds = List.of("blockwheel:block", RadialPages.FENCE_GATE);
+        var gates = pages(gateIds);
+        assertEquals(4, gates.slots(0)); assertEquals(RadialPages.FENCE_GATE, gateIds.get(gates.choice(0, 2)));
+        assertEquals(1, gates.variants(0, 2));
+        var fences = pages(List.of("blockwheel:block", RadialPages.FENCE));
+        assertEquals(1, fences.variants(0, 2)); assertEquals(0, fences.variants(0, 1));
+    }
+
     @Test void everySubsetRetainsItsCardinalPositionRegardlessOfInputOrder() {
         var all = List.of("blockwheel:slab", "blockwheel:wall", "blockwheel:stairs", "blockwheel:block");
         for (int mask = 1; mask < 16; mask++) {

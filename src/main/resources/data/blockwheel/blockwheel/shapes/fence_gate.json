@@ -1,0 +1,8 @@
+{
+  "translation_key": "shape.blockwheel.fence_gate",
+  "units": 4,
+  "order": 45,
+  "suffixes": ["_fence_gate"],
+  "block_tags": ["minecraft:fence_gates"],
+  "base_tags": ["minecraft:planks"]
+}

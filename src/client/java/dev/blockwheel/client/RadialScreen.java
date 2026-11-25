@@ -24,6 +24,7 @@ public final class RadialScreen extends Screen {
     private static final float SELECTION_VOLUME = 0.5f;
     private final Payloads.Wheel wheel;
     private final RadialPages arrangement;
+    private final int[] variants;
     private int page;
     private int selected = -1;
     private boolean finished;
@@ -35,6 +36,12 @@ public final class RadialScreen extends Screen {
         super(Component.translatable("ui.blockwheel.title"));
         this.wheel = wheel;
         this.arrangement = new RadialPages(wheel.options().size(), index -> wheel.options().get(index).shapeId(), RadialPages.STANDARD_POSITIONS);
+        this.variants = new int[wheel.options().size()];
+        if (wheel.options().stream().anyMatch(option -> option.itemId().equals(wheel.sourceItem()) && option.shapeId().equals(RadialPages.FENCE_GATE))) {
+            for (int index = 0; index < wheel.options().size(); index++) {
+                if (wheel.options().get(index).shapeId().equals(RadialPages.FENCE)) variants[index] = 1;
+            }
+        }
     }
 
     @Override protected void init() {
@@ -66,7 +73,7 @@ public final class RadialScreen extends Screen {
     private int optionCount() { return arrangement.slots(page); }
     private Payloads.Option option(int index) {
         int choice = arrangement.choice(page, index);
-        return choice < 0 ? null : wheel.options().get(choice);
+        return choice < 0 ? null : wheel.options().get(arrangement.choice(page, index, variants[choice]));
     }
     private int pages() { return arrangement.size(); }
     private RadialLayout layout() { return RadialLayout.fit(width, height, optionCount()); }
@@ -185,6 +192,12 @@ public final class RadialScreen extends Screen {
     @Override public boolean mouseScrolled(double x, double y, double horizontal, double vertical) {
         if (!Double.isFinite(vertical) || vertical == 0) return true;
         updateSelection();
+        if (selected >= 0 && arrangement.variants(page, selected) > 1) {
+            int choice = arrangement.choice(page, selected);
+            variants[choice] = Math.floorMod(variants[choice] + (vertical < 0 ? 1 : -1), arrangement.variants(page, selected));
+            playSelectionSound();
+            return true;
+        }
         if (pages() > 1) changePage(vertical < 0 ? 1 : -1);
         return true;
     }

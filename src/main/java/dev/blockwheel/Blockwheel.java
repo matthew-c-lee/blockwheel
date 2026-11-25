@@ -31,6 +31,8 @@ public final class Blockwheel implements ModInitializer {
         PayloadTypeRegistry.clientboundPlay().register(BuilderPayloads.SupplyCounts.TYPE, BuilderPayloads.SupplyCounts.CODEC);
         PayloadTypeRegistry.clientboundPlay().register(BuilderPayloads.SupplyInvalidated.TYPE, BuilderPayloads.SupplyInvalidated.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(BuilderPayloads.SupplyQuery.TYPE, (payload, context) -> BUILDERS.querySupply(context.player(), payload));
+        PayloadTypeRegistry.serverboundPlay().register(BuilderPayloads.SupplyHand.TYPE, BuilderPayloads.SupplyHand.CODEC);
+        ServerPlayNetworking.registerGlobalReceiver(BuilderPayloads.SupplyHand.TYPE, (payload, context) -> BUILDERS.supplyHand(context.player(), payload));
         ServerPlayNetworking.registerGlobalReceiver(BuilderPayloads.Update.TYPE, (payload, context) -> BUILDERS.configure(context.player(), payload.settings()));
         PayloadTypeRegistry.serverboundPlay().register(BuilderPayloads.FillTemplates.TYPE, BuilderPayloads.FillTemplates.CODEC);
         ServerPlayNetworking.registerGlobalReceiver(BuilderPayloads.FillTemplates.TYPE, (payload, context) -> BUILDERS.fillTemplates(context.player(), payload.containerId(), payload.includeHotbar()));

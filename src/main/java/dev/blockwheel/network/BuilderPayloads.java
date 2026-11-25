@@ -48,6 +48,18 @@ public final class BuilderPayloads {
         public static final StreamCodec<RegistryFriendlyByteBuf, SupplyInvalidated> CODEC = StreamCodec.unit(new SupplyInvalidated());
         @Override public Type<SupplyInvalidated> type() { return TYPE; }
     }
+    /** Requested block and stale-hand guard only; the server chooses every withdrawal and output count. */
+    public record SupplyHand(int slot, String itemId, String expectedItemId, int expectedCount) implements CustomPacketPayload {
+        public SupplyHand {
+            if (slot < 0 || slot > 8 || expectedCount < 0 || expectedCount > 9999) throw new IllegalArgumentException("Invalid hand snapshot");
+        }
+        public static final Type<SupplyHand> TYPE = new Type<>(Blockwheel.id("supply_hand_v1"));
+        public static final StreamCodec<RegistryFriendlyByteBuf, SupplyHand> CODEC = StreamCodec.of((buf, value) -> {
+            buf.writeVarInt(value.slot); buf.writeUtf(value.itemId, 256);
+            buf.writeUtf(value.expectedItemId, 256); buf.writeVarInt(value.expectedCount);
+        }, buf -> new SupplyHand(buf.readVarInt(), buf.readUtf(256), buf.readUtf(256), buf.readVarInt()));
+        @Override public Type<SupplyHand> type() { return TYPE; }
+    }
     public record FillTemplates(int containerId, boolean includeHotbar) implements CustomPacketPayload {
         public FillTemplates(int containerId) { this(containerId, false); }
         public static final Type<FillTemplates> TYPE = new Type<>(Blockwheel.id("fill_templates"));

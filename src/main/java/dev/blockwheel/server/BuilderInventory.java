@@ -263,6 +263,18 @@ public final class BuilderInventory {
         return slot == Inventory.SLOT_OFFHAND || slot >= 0 && slot < 9 && inventory.getSelectedSlot() == slot;
     }
 
+    /** Bootstrap schematic placement with the restock source scope and additional-quantity limit. */
+    public Plan supplyHand(Inventory inventory, Container ender, MaterialSupply.Policy policy, int slot, ItemStack target, int amount) {
+        if (target.isEmpty() || slot < 0 || slot > 8 || inventory.getSelectedSlot() != slot || amount < 1) return null;
+        var sources = new MaterialSupply.Policy(policy.shulkers(), policy.ender(), false, false);
+        var trial = new InventoryTransaction(inventory, sources.shulkers() && sources.ender() ? ender : null);
+        int desired = Math.min(amount, trial.limit(target));
+        var material = materials.resolve(target);
+        var finish = handDestination(slot, target);
+        return material == null ? acquireExact(trial, target, desired, sources, finish)
+                : acquire(trial, material, desired, sources, finish);
+    }
+
     public Plan pick(Inventory inventory, int slot, Item target) {
         return pick(inventory, null, MaterialSupply.Policy.pickLoose(), slot, target);
     }
@@ -317,6 +329,11 @@ public final class BuilderInventory {
     private Plan acquire(InventoryTransaction before, BlockMaterials.Material target, int desired,
                          MaterialSupply.Policy policy, BiPredicate<InventoryTransaction, Integer> finish) {
         var sources = MaterialSupply.collect(before, materials, target, policy);
+        return acquire(before, target, desired, sources, finish);
+    }
+
+    private Plan acquire(InventoryTransaction before, BlockMaterials.Material target, int desired,
+                         List<MaterialSupply.Source> sources, BiPredicate<InventoryTransaction, Integer> finish) {
         long available = sources.stream().mapToLong(source -> (long) source.available(before) * source.form().units()).sum();
         int maximum = (int) Math.min(desired, available / target.form().units());
         MaterialWithdrawal<MaterialSupply.Source> exact = null;
@@ -362,8 +379,7 @@ public final class BuilderInventory {
 
     /** Exact physical batches leave unaccepted source items in their original form and slot. */
     private Plan acquireBatches(InventoryTransaction before, BlockMaterials.Material target, int desired,
-                                MaterialSupply.Policy policy, BiPredicate<InventoryTransaction, Integer> finish) {
-        var sources = MaterialSupply.collect(before, materials, target, policy);
+                                List<MaterialSupply.Source> sources, BiPredicate<InventoryTransaction, Integer> finish) {
         long available = sources.stream().mapToLong(source -> (long) source.available(before) * source.form().units()).sum();
         int maximum = (int) Math.min(desired, available / target.form().units());
         if (maximum < 1) return null;
@@ -393,7 +409,7 @@ public final class BuilderInventory {
         if (box == null || box.reserve() != 1 || box.space(inner) == 0) return null;
         var target = materials.resolve(box.get(inner));
         if (target == null) return null;
-        var sources = includeHotbar ? MaterialSupply.Policy.pickLoose() : MaterialSupply.Policy.mainOnly();
+        var sources = MaterialSupply.collectDeposit(snapshot, materials, target, includeHotbar);
         if (target.family().logBased()) return acquireBatches(snapshot, target, box.space(inner), sources, (candidate, count) ->
                 candidate.box(remote, outer).fillExisting(inner, new ItemStack(target.form().item(), count)) == count);
         return acquire(snapshot, target, box.space(inner), sources, (candidate, count) ->

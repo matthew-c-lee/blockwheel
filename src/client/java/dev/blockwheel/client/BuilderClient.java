@@ -4,6 +4,7 @@ import dev.blockwheel.core.BuilderSettings;
 import dev.blockwheel.core.BuilderSettings.Feature;
 import dev.blockwheel.core.MaterialComposition;
 import dev.blockwheel.network.BuilderPayloads;
+import dev.blockwheel.client.compat.LitematicaCompatibility;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
@@ -98,6 +99,7 @@ public final class BuilderClient {
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> {
             settings = BuilderSettings.defaults(); catalog = Map.of(); incoming = new HashMap<>(); nextPart = 0; receiving = false;
             enderAllowed = false; clearSupply(); lastQuery = 0;
+            LitematicaCompatibility.reset();
         });
         ScreenEvents.AFTER_INIT.register((client, screen, width, height) -> InventoryControls.install(screen));
         ItemTooltipCallback.EVENT.register((stack, context, flags, lines) -> {

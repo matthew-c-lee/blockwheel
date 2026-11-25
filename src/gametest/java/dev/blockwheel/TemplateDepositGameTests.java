@@ -25,6 +25,40 @@ public final class TemplateDepositGameTests {
     }
     private boolean fill(ServerPlayer player) { return Blockwheel.BUILDERS.fillTemplates(player, player.containerMenu.containerId, true); }
 
+    @GameTest public void offhandExactItemsDepositOnlyOnCompletedHoldAndKeepCapacityLeftovers(GameTestHelper test) {
+        var p = player(test); Blockwheel.BUILDERS.configure(p, Blockwheel.BUILDERS.settings(p).withEnabled(false));
+        p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.COBBLESTONE, 10));
+        var box = ShulkerSupplyGameTests.box(true, new ItemStack(Items.COBBLESTONE, 60), ItemStack.EMPTY);
+        p.getEnderChestInventory().setItem(0, box.copy());
+        test.assertTrue(!Blockwheel.BUILDERS.fillTemplates(p, p.containerMenu.containerId) && p.getOffhandItem().getCount() == 10,
+                "Short dump consumed offhand items");
+        test.assertTrue(fill(p) && p.getOffhandItem().getCount() == 6
+                && ShulkerSupplyGameTests.contents(p.getEnderChestInventory().getItem(0)).get(0).getCount() == 64
+                && ShulkerSupplyGameTests.contents(p.getEnderChestInventory().getItem(0)).get(1).isEmpty(),
+                "Bulk dump missed the offhand, overfilled a template or created an empty-slot template");
+        metadata(test, box, p.getEnderChestInventory().getItem(0)); test.succeed();
+    }
+    @GameTest public void bulkDumpConvertsOffhandFamilyMaterialButShortDumpCannot(GameTestHelper test) {
+        var p = player(test); p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.COBBLESTONE_STAIRS, 10));
+        p.getEnderChestInventory().setItem(0, ShulkerSupplyGameTests.box(true, new ItemStack(Items.COBBLESTONE, 60)));
+        test.assertTrue(!Blockwheel.BUILDERS.fillTemplates(p, p.containerMenu.containerId) && p.getOffhandItem().getCount() == 10,
+                "Short conversion borrowed from the offhand");
+        test.assertTrue(fill(p) && p.getOffhandItem().is(Items.COBBLESTONE_STAIRS) && p.getOffhandItem().getCount() == 6
+                && ShulkerSupplyGameTests.contents(p.getEnderChestInventory().getItem(0)).get(0).getCount() == 64,
+                "Offhand conversion lost unaccepted material or failed to fill the template"); test.succeed();
+    }
+    @GameTest public void bulkLogPackingCanCombineMainHotbarAndOffhandInOneExactBatch(GameTestHelper test) {
+        var p = player(test); Blockwheel.BUILDERS.configure(p, Blockwheel.BUILDERS.settings(p).withFeature(Feature.EXPERIMENTAL_WOOD, true));
+        p.getInventory().setItem(9, new ItemStack(Items.OAK_STAIRS, 1)); p.getInventory().setItem(0, new ItemStack(Items.OAK_STAIRS, 1));
+        p.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.OAK_STAIRS, 3));
+        p.getEnderChestInventory().setItem(0, ShulkerSupplyGameTests.box(true, new ItemStack(Items.OAK_LOG, 63)));
+        test.assertTrue(!Blockwheel.BUILDERS.fillTemplates(p, p.containerMenu.containerId), "Short log packing borrowed held sources");
+        test.assertTrue(fill(p) && p.getInventory().getItem(9).isEmpty() && p.getMainHandItem().isEmpty()
+                && p.getOffhandItem().is(Items.OAK_STAIRS) && p.getOffhandItem().getCount() == 1
+                && ShulkerSupplyGameTests.contents(p.getEnderChestInventory().getItem(0)).get(0).getCount() == 64,
+                "Bulk log packing failed to conserve mixed sources and the offhand remainder"); test.succeed();
+    }
+
     @GameTest public void shortDepositDefaultsToMainInventoryAndLeavesEveryHotbarSlot(GameTestHelper test) {
         var p = player(test); p.getInventory().setItem(0, new ItemStack(Items.COBBLESTONE, 10));
         p.getInventory().setItem(8, new ItemStack(Items.COBBLESTONE, 12)); p.getInventory().setItem(9, new ItemStack(Items.COBBLESTONE, 20));
@@ -155,7 +189,7 @@ public final class TemplateDepositGameTests {
                 "Components, smaller stack limit or unmatched leftovers were lost"); test.succeed();
     }
 
-    @GameTest public void mainInventoryPrecedesHotbarAndEquipmentAndCursorAreExcluded(GameTestHelper test) {
+    @GameTest public void mainInventoryPrecedesHotbarThenOffhandAndCursorIsExcluded(GameTestHelper test) {
         var player = player(test); player.getEnderChestInventory().setItem(0, ShulkerSupplyGameTests.box(true, new ItemStack(Items.COBBLESTONE, 60)));
         player.getInventory().setItem(0, new ItemStack(Items.COBBLESTONE, 10)); player.getInventory().setItem(9, new ItemStack(Items.COBBLESTONE, 2));
         player.setItemInHand(InteractionHand.OFF_HAND, new ItemStack(Items.COBBLESTONE, 20));

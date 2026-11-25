@@ -51,6 +51,20 @@ public final class MaterialSupply {
                 ItemStack.isSameItemSameComponents(target, stack) ? form : null);
     }
 
+    /** Only an explicit bulk template deposit may spend loose offhand material. */
+    public static List<Source> collectDeposit(InventoryTransaction transaction, BlockMaterials materials,
+            BlockMaterials.Material target, boolean includeHands) {
+        var sources = new ArrayList<>(collect(transaction, materials, target,
+                includeHands ? Policy.pickLoose() : Policy.mainOnly()));
+        if (includeHands) {
+            var offhand = materials.resolve(transaction.get(Inventory.SLOT_OFFHAND));
+            if (offhand != null && offhand.family() == target.family()) {
+                sources.add(new Source(false, Inventory.SLOT_OFFHAND, -1, 0, 2, Inventory.SLOT_OFFHAND, offhand.form()));
+            }
+        }
+        return List.copyOf(sources);
+    }
+
     private static List<Source> collect(InventoryTransaction transaction, Policy policy,
             net.minecraft.world.item.Item target, Function<ItemStack, BlockMaterials.Form> matching) {
         List<Source> result = new ArrayList<>();

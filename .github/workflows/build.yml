@@ -12,7 +12,7 @@ on:
       client_profile:
         description: Optional client compatibility profile
         type: choice
-        options: [baseline, modmenu, tweakeroo]
+        options: [baseline, modmenu, tweakeroo, litematica]
         default: baseline
 
 permissions:
@@ -105,6 +105,7 @@ jobs:
             baseline) ;;
             modmenu) profile=(-PtestModMenu=true) ;;
             tweakeroo) profile=(-PtestTweakeroo=true) ;;
+            litematica) profile=(-PtestLitematica=true) ;;
             *) exit 1 ;;
           esac
           xvfb-run -a -s '-screen 0 1600x1000x24' ./gradlew --no-daemon --console=plain runClientGameTest "${profile[@]}"

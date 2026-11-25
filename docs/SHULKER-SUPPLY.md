@@ -4,7 +4,7 @@ Shulker Supply extends Builder Mode's existing restocker and pick block. It with
 
 ## Enable it
 
-1. Install Blockwheel 1.0.1 on both client and server. The dependency minimums remain Fabric Loader 0.19.5, Fabric API 0.160.0+26.2 and Java 25.
+1. Install Blockwheel 1.0.2 on both client and server. The dependency minimums remain Fabric Loader 0.19.5, Fabric API 0.160.0+26.2 and Java 25.
 2. Open your inventory and left-click the Builder icon to enable **Builder Mode**.
 3. Right-click the Builder switch, select **Supply**, and enable **Shulker Supply**.
 4. Choose whether to enable remote ender chest access, **Pick from stored supplies**, **Show stored material totals** and **Non-blocks from shulkers**.

@@ -84,8 +84,9 @@ dependencies {
     gametestCompileOnly("com.terraformersmc:modmenu:${project.modmenu_version}") { transitive = false }
 }
 
-// Optional test profile only; neither mod is bundled or required by Blockwheel.
-if (providers.gradleProperty('testTweakeroo').map { it.toBoolean() }.getOrElse(false)) {
+// Optional compatibility profiles only; these mods are never bundled or required by Blockwheel.
+if (providers.gradleProperty('testTweakeroo').map { it.toBoolean() }.getOrElse(false)
+        || providers.gradleProperty('testLitematica').map { it.toBoolean() }.getOrElse(false)) {
     repositories {
         maven {
             name = 'ModrinthTestProfile'
@@ -93,8 +94,18 @@ if (providers.gradleProperty('testTweakeroo').map { it.toBoolean() }.getOrElse(f
             content { includeGroup 'maven.modrinth' }
         }
     }
+}
+
+if (providers.gradleProperty('testTweakeroo').map { it.toBoolean() }.getOrElse(false)) {
     dependencies {
         gametestRuntimeOnly 'maven.modrinth:t5wuYk45:tzGdG1Ri'
+        gametestRuntimeOnly 'maven.modrinth:GcWjdA9I:74gmDXEM'
+    }
+}
+
+if (providers.gradleProperty('testLitematica').map { it.toBoolean() }.getOrElse(false)) {
+    dependencies {
+        gametestRuntimeOnly 'maven.modrinth:bEpr0Arc:CuniXtbo'
         gametestRuntimeOnly 'maven.modrinth:GcWjdA9I:74gmDXEM'
     }
 }

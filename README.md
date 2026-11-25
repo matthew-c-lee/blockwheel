@@ -1,6 +1,6 @@
 # Blockwheel
 
-**1.0.1 — hotfix.**
+**1.0.2 — Easy Place, bulk deposits and fence gates.**
 
 A Fabric mod for **Minecraft Java Edition 26.2**. Hold **R** while holding a building block, point the mouse near another shape in its family, then release **R** to convert the stack. The floating cube-shaped slots combine Minecraft's gray hotbar styling with the supplied radial reference's geometry.
 
@@ -9,7 +9,7 @@ A Fabric mod for **Minecraft Java Edition 26.2**. Hold **R** while holding a bui
 ## Install
 
 1. Install Fabric Loader **0.19.5 or newer** for Minecraft **26.2**, with **Java 25**.
-2. Put `blockwheel-1.0.1+mc26.2.jar` and **Fabric API 0.160.0+26.2 or newer for 26.2** in your instance's `mods` folder.
+2. Put `blockwheel-1.0.2+mc26.2.jar` and **Fabric API 0.160.0+26.2 or newer for 26.2** in your instance's `mods` folder.
 3. For multiplayer, install both mods on the server as well. Singleplayer includes its own server automatically.
 
 Use a Fabric API build intended for **26.2**. This release does not target Bedrock, Forge, NeoForge, 26.1 or 26.3.
@@ -22,7 +22,7 @@ Settings open on **Block wheel**, with the title **Blockwheel Settings**. The Bu
 
 With optional **Mod Menu**, select **Blockwheel → Configure** to open the same settings, including **Block wheel**, **Builder**, **Restock**, **Supply**, **Pick block** and **Interface** tabs. Join a world running Blockwheel to change server-owned preferences. Pick fallback rules and interface preferences are stored for the instance and can also be edited from the title screen. Mod Menu is not required or bundled.
 
-An acknowledged Builder toggle plays the enchanting-table sound when enabled and the grindstone sound when disabled, with **Builder Mode: ON/OFF** above the hotbar. Joining a world or changing unrelated preferences does not replay it. A successful named-shulker deposit plays the ender-eye insertion sound without a message. Both buttons and keybinds share this feedback. A short dump press acts on release and uses main inventory only; a 0.6-second hold includes the hotbar and fires once at the threshold. Releasing a completed hold does nothing. The deposit button shows a filling progress strip while held.
+An acknowledged Builder toggle plays the enchanting-table sound when enabled and the grindstone sound when disabled, with **Builder Mode: ON/OFF** above the hotbar. Joining a world or changing unrelated preferences does not replay it. A successful named-shulker deposit plays the ender-eye insertion sound without a message. Both buttons and keybinds share this feedback. A short dump press acts on release and uses main inventory only; a 0.6-second hold includes the hotbar and offhand and fires once at the threshold. Releasing a completed hold does nothing. The deposit button shows a filling progress strip while held.
 
 The **Interface** tab can completely hide either inventory control with **Show Builder Mode Button** and **Show Shulker Refill Controls**, both ON by default. Hidden controls are removed, including their click targets. Visibility does not change gameplay settings. Bind **Open Blockwheel Settings** under Controls to keep settings accessible without Mod Menu or visible inventory buttons. The **Block wheel** page has an opt-in **Use only the block wheel** action. It turns Builder Mode off and hides both controls while preserving individual feature choices and manual-radial options.
 
@@ -54,9 +54,11 @@ Remote access is performed by the server and can be disabled in `config/blockwhe
 
 See the [Builder Mode guide](docs/BUILDER-MODE.md), [Shulker Supply guide and server configuration](docs/SHULKER-SUPPLY.md), [architecture](docs/ARCHITECTURE.md), [Tweakeroo compatibility](docs/TWEAKEROO.md) and [release verification](docs/VERIFICATION.md).
 
+With **Litematica Easy Place**, enabled Hand restock can also fetch a missing schematic block before placement, using the configured amount and enabled supplies. Litematica keeps its own pick slots and placement controls. See [Easy Place integration](docs/LITEMATICA.md).
+
 ## Fill named ender shulkers
 
-The small deposit icon beside an open ender chest fills **existing matching stacks in named shulkers** from main inventory on a short release. Hold for **0.6 seconds** to also include hotbar items. It ignores empty shulker slots and unnamed boxes. Normally exact matches fill first; with Builder Mode on, compatible family forms can also convert into existing templates. Experimental wood gives existing log templates priority across eligible boxes, accepting only complete lossless batches and leaving original remainders safe. Builder Mode off keeps exact matching. Stack limits, physical change and box metadata/layout are preserved, and excess input remains in inventory. Equipment and cursor-held items are excluded.
+The small deposit icon beside an open ender chest fills **existing matching stacks in named shulkers** from main inventory on a short release. Hold for **0.6 seconds** to also include hotbar and offhand items. It ignores empty shulker slots and unnamed boxes. Normally exact matches fill first; with Builder Mode on, compatible family forms can also convert into existing templates. Experimental wood gives existing log templates priority across eligible boxes, accepting only complete lossless batches and leaving original remainders safe. Builder Mode off keeps exact matching. Stack limits, physical change and box metadata/layout are preserved, and excess input remains in inventory. Armor and cursor-held items are excluded.
 
 The fill button sits to the right of the ender chest/panel; an inventory shortcut follows exposed native ender slots and otherwise sits beside the main panel. That remote shortcut requires Ender Chest Access and server permission. The button on an already open personal ender chest works independently of Builder Mode and remote access. With experimental wood enabled, this same explicit action can also fill carried named shulkers without granting remote access; carried destinations precede permitted ender destinations. Nothing is deposited automatically. See [named-shulker deposits](docs/NAMED-SHULKERS.md) and [interface details](docs/INTERFACE.md).
 
@@ -69,7 +71,8 @@ The fill button sits to the right of the ender chest/panel; an inventory shortcu
 | Release R after selecting another shape | Convert the held stack in complete batches, then close |
 | Release R in the neutral center, or with the current shape selected | Close without changing anything |
 | Escape | Cancel while still holding R |
-| Scroll / Page Up / Page Down | Change page if a pack supplies additional pages; never switch wall/fence variants |
+| Scroll | Switch fence/fence gate while pointing at that option; otherwise change page when extra pages exist |
+| Page Up / Page Down | Change page when extra pages exist |
 | Open Blockwheel Settings key, unbound by default | Open settings even with inventory controls hidden |
 | Toggle Builder Mode key, unbound by default | Enable or disable Builder Mode |
 | Fill named ender shulkers key, unbound by default | Run the same manual deposit as the fill button, under the existing ender-access policy |
@@ -84,7 +87,7 @@ Each newly highlighted option plays a wooden pressure-plate click at 0.5 volume 
 
 The compact wheel uses GUI pixels, so it follows the same GUI scale as the hotbar. Item icons are up to 24 GUI pixels, compared with the hotbar's 16; the standard four-option wheel is about one third smaller than the maximum size before 1.3. Adding alternates keeps the existing icon coordinates, radius and sizes fixed.
 
-Only forms that actually exist are shown. Wood usually has planks, stairs, slabs and a fence; stone families often have a wall instead of a fence. When both exist, such as nether brick, walls remain down and fences get a separate bottom-left icon. A fence-only family retains its usual down position. Scrolling does not change the selected form.
+Only forms that actually exist are shown. Wood usually has planks, stairs, slabs and a fence; stone families often have a wall instead of a fence. When both exist, such as nether brick, walls remain down and fences get a separate bottom-left icon. A fence-only family retains its usual down position. Point at the fence and scroll to switch it to a fence gate, in the same position; scroll again to switch back. Gates are worth two planks each, with sticks ignored. See [fence gates](docs/FENCE-GATES.md).
 
 **Block wheel → Wooden trapdoor shapes** starts **OFF**, including for existing saves. When enabled, wooden trapdoors appear at **bottom-right** in their plank family. One trapdoor has the value of **three planks** (six wooden slabs), matching the vanilla six-planks-for-two-trapdoors recipe. Conversion works in both directions, uses complete batches and keeps physical remainders. Metal trapdoors are excluded. With Builder Mode enabled, the same opt-in and ratio also apply to pickup, normalization, restocking, pick and template coercion. When the alternate is off, trapdoors remain exact items. The radial itself still works while Builder Mode is off.
 
@@ -162,13 +165,15 @@ Install JDK 25 and set `JAVA_HOME` to its installation directory, or put its `bi
 ./gradlew runClientGameTest -PtestTweakeroo=true
 # Optional Mod Menu 20.0.3 integration profile:
 ./gradlew runClientGameTest -PtestModMenu=true
+# Optional Litematica 0.28.8 / MaLiLib 0.29.5 profile:
+./gradlew runClientGameTest -PtestLitematica=true
 ```
 
-On Windows use `.\gradlew.bat`. `build` runs JUnit and Fabric server GameTests and writes production and sources JARs to `build/libs/`; `runGameTest` also runs the server integration suite on its own. `releaseArtifacts` builds and stages only those two JARs and `SHA256SUMS.txt` in `build/release/`. The installable file is `blockwheel-1.0.1+mc26.2.jar`; its internal mod version is `1.0.1`. No local tool paths or previous caches are required.
+On Windows use `.\gradlew.bat`. `build` runs JUnit and Fabric server GameTests and writes production and sources JARs to `build/libs/`; `runGameTest` also runs the server integration suite on its own. `releaseArtifacts` builds and stages only those two JARs and `SHA256SUMS.txt` in `build/release/`. The installable file is `blockwheel-1.0.2+mc26.2.jar`; its internal mod version is `1.0.2`. No local tool paths or previous caches are required.
 
 The client test needs an OpenGL-capable display and a **1600×1000** viewport. Tests include a button form added entirely through data and a registered modded family with smaller stack limits and a three-unit flooring shape. Client scenarios cover inventory controls, native gameplay packets, saved preferences, dedicated-server reconnection and the radial. Test entrypoints, test data and optional compatibility dependencies are excluded from the release JAR.
 
-GitHub Actions runs the build, unit tests and server GameTests on every push/PR and manual dispatch. In **Actions → Build and test → successful run → Artifacts**, download **blockwheel-1.0.1+mc26.2**, extract it, and install the JAR without `-sources`. Client/render tests are opt-in under **Run workflow → client_tests**, with baseline, Mod Menu or Tweakeroo profiles; CI uses Xvfb/Mesa and checks captured frames. See [development and CI](docs/DEVELOPMENT.md) for setup, artifact contents and current validation limits.
+GitHub Actions runs the build, unit tests and server GameTests on every push/PR and manual dispatch. In **Actions → Build and test → successful run → Artifacts**, download **blockwheel-1.0.2+mc26.2**, extract it, and install the JAR without `-sources`. Client/render tests are opt-in under **Run workflow → client_tests**, with baseline, Mod Menu, Tweakeroo or Litematica profiles; CI uses Xvfb/Mesa and checks captured frames. See [development and CI](docs/DEVELOPMENT.md) for setup, artifact contents and current validation limits.
 
 The hotbar fixture also reloads synthetic standard/HD resource packs, checks their border profiles and restores vanilla. Screenshot checks read native captures without editing them:
 

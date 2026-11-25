@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.2 — Easy Place, bulk deposits and fence gates
+
+- Let Litematica Easy Place request missing building items through Hand restock, using the configured refill amount, compatible family material and enabled carried/ender shulker supplies. Litematica keeps its own pick slots and placement behavior; all inventory changes remain server-authoritative.
+- Include the offhand after main inventory and hotbar in a completed 0.6-second dump hold. Short presses remain main-inventory only. Exact matching, Builder family conversion and experimental log packing share this scope.
+- Scroll over the fence option to switch between fence and fence gate in the same wheel position. One gate is worth two planks, ignoring sticks; gates join their plank families and share ordinary conservation and stack limits.
+- Add an optional Litematica 0.28.8 / MaLiLib 0.29.5 client profile without bundling or requiring either mod.
+
 ## 1.0.1 — Hotfix
 
 - Fix automatic restocking after offhand placement, item use and completed eating, including the last item. Both hands use the same refill settings, supply permissions and named reserves without spending the other hand's loose items.

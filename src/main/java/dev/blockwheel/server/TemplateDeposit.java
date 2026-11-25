@@ -32,9 +32,9 @@ public final class TemplateDeposit {
         }
         for (var target : targets) {
                 var box = transaction.box(target.remote(), target.outer());
-                // A short press uses main storage only; a completed hold adds the hotbar afterwards.
-                for (int index = 0; index < (includeHotbar ? 36 : 27); index++) {
-                    int slot = (index + 9) % 36;
+                // A short press uses main storage; a completed hold then adds hotbar and offhand.
+                for (int index = 0; index < (includeHotbar ? 37 : 27); index++) {
+                    int slot = index < 36 ? (index + 9) % 36 : Inventory.SLOT_OFFHAND;
                     int count = box.fillExisting(target.inner(), transaction.get(slot));
                     if (count == 0) continue;
                     transaction.remove(slot, count); moved = Math.addExact(moved, count);

@@ -55,6 +55,7 @@ public final class BuilderController {
     private BuilderServerConfig policy = new BuilderServerConfig(true);
     private final Map<Container, ServerPlayer> enderOwners = new IdentityHashMap<>();
     private final Map<UUID, Integer> queries = new HashMap<>();
+    private final Map<UUID, Integer> handSupplyRequests = new HashMap<>();
     private final Map<UUID, PickRules> pickRules = new HashMap<>();
     private PickDefaults pickDefaults = PickDefaults.EMPTY;
     public void pickRules(ServerPlayer player, PickRules rules) { pickRules.put(player.getUUID(), rules); }
@@ -115,13 +116,13 @@ public final class BuilderController {
     }
     public void forget(ServerPlayer player) {
         busy.remove(player.getUUID()); cursors.remove(player.getUUID()); queries.remove(player.getUUID());
-        pickRules.remove(player.getUUID());
+        pickRules.remove(player.getUUID()); handSupplyRequests.remove(player.getUUID());
         enderOwners.entrySet().removeIf(entry -> entry.getValue().getUUID().equals(player.getUUID()));
     }
     public void clear() {
         server = null;
         busy.clear(); cursors.clear(); enderOwners.clear(); queries.clear();
-        pickRules.clear(); pickDefaults = PickDefaults.EMPTY;
+        pickRules.clear(); handSupplyRequests.clear(); pickDefaults = PickDefaults.EMPTY;
         materials = new BlockMaterials(FamilyCatalog.empty()); inventory = new BuilderInventory(materials);
         materialViews = new BlockMaterials[]{materials, materials, materials, materials}; planners = new BuilderInventory[]{inventory, inventory, inventory, inventory};
     }
@@ -223,6 +224,33 @@ public final class BuilderController {
             var plan = planner(player).restock(player.getInventory(), sources.ender() ? player.getEnderChestInventory() : null,
                     sources, slot, previous, restock.amount());
             if (plan != null && plan.transaction().commit()) sync(player);
+        } finally { busy.remove(player.getUUID()); }
+    }
+
+    /** An optional schematic client may request a block; all material, amounts and writes remain server-owned. */
+    public boolean supplyHand(ServerPlayer player, BuilderPayloads.SupplyHand request) {
+        if (!active(player, Feature.RESTOCK) || !usable(player) || player.hasInfiniteMaterials()
+                || player.containerMenu != player.inventoryMenu || !player.containerMenu.getCarried().isEmpty()
+                || player.getInventory().getSelectedSlot() != request.slot()) return false;
+        int now = player.level().getServer().getTickCount();
+        if (now - handSupplyRequests.getOrDefault(player.getUUID(), now - 5) < 5) return false;
+        handSupplyRequests.put(player.getUUID(), now);
+        var held = player.getInventory().getItem(request.slot());
+        if (held.getCount() != request.expectedCount()
+                || !BuiltInRegistries.ITEM.getKey(held.getItem()).toString().equals(request.expectedItemId())) return false;
+        var itemId = Identifier.tryParse(request.itemId());
+        if (itemId == null) return false;
+        var target = new ItemStack(BuiltInRegistries.ITEM.getValue(itemId));
+        if (!(target.getItem() instanceof BlockItem) || !target.isItemEnabled(player.level().enabledFeatures())
+                || ItemStack.isSameItemSameComponents(held, target)
+                || materials(player).resolve(target) == null && !settings(player).shulkerSupply()) return false;
+        busy.add(player.getUUID());
+        try {
+            var sources = supplyPolicy(player, false, false);
+            var plan = planner(player).supplyHand(player.getInventory(), sources.ender() ? player.getEnderChestInventory() : null,
+                    sources, request.slot(), target, settings(player).restock().amount());
+            if (plan == null || !plan.transaction().commit()) return false;
+            sync(player); return true;
         } finally { busy.remove(player.getUUID()); }
     }
 

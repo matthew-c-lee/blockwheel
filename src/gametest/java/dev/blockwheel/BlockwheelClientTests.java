@@ -264,8 +264,11 @@ public final class BlockwheelClientTests implements FabricClientGameTest {
         point(context, 0, 24);
         assertSelection(context, "Fence"); // Fence-only families retain their usual down position.
         scroll(context, 1);
+        assertSelection(context, "Fence Gate");
+        assertClicks(context, 2);
+        scroll(context, -1);
         assertSelection(context, "Fence");
-        assertClicks(context, 1);
+        assertClicks(context, 3);
         release(context);
         world.getConnection().waitForServerboundPackets();
         world.getServer().runOnServer(server -> {

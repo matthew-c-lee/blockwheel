@@ -31,6 +31,17 @@ public final class SignClientTests implements FabricClientGameTest {
                 release(context); held(context, Items.OAK_SIGN, 3);
                 open(context); point(context, 0); release(context); held(context, Items.OAK_PLANKS, 6);
 
+                open(context); point(context, 4); selected(context, "Fence. 6 -> 6");
+                context.getInput().scroll(1); context.waitTicks(1); selected(context, "Fence Gate. 6 -> 3");
+                if (!server.computeOnServer(value -> connection.getServerPlayer().getMainHandItem().is(Items.OAK_PLANKS)))
+                    throw new AssertionError("Scrolling converted before release");
+                context.getInput().scroll(-1); context.waitTicks(1); selected(context, "Fence. 6 -> 6");
+                context.getInput().scroll(1); context.waitTicks(1); release(context); held(context, Items.OAK_FENCE_GATE, 3);
+                open(context); point(context, 4); selected(context, "Fence Gate. 3 -> 3"); release(context); held(context, Items.OAK_FENCE_GATE, 3);
+                open(context); point(context, 4); context.getInput().scroll(1); context.waitTicks(1);
+                selected(context, "Fence. 3 -> 6"); release(context); held(context, Items.OAK_FENCE, 6);
+                open(context); point(context, 0); release(context); held(context, Items.OAK_PLANKS, 6);
+
                 seed(context, server, connection, p -> set(p, 0, Items.OAK_PLANKS, 64));
                 open(context); point(context, 5); release(context); held(context, Items.OAK_SIGN, 16);
                 if (!server.computeOnServer(value -> connection.getServerPlayer().getInventory().countItem(Items.OAK_PLANKS) == 32

@@ -17,6 +17,10 @@ Both hands use these settings independently. Placing a block, throwing an item o
 
 Refills use the existing ordered source planner, family ratios, named-slot reserves and physical change. Unsafe or unavailable refills leave the inventory unchanged. Drops, intentional slot changes and inventory moves do not trigger them. The quantity setting applies to hand restocking; pickup routing, pick block and manual radial conversions retain their own existing limits.
 
+## Litematica Easy Place
+
+With optional Litematica, Hand restock also supplies a missing Easy Place block before placement. Initial acquisition uses **Add up to** and Litematica's pick-slot rules; subsequent placement uses the normal threshold. Both use the same material planner and supply gates. See [Easy Place](LITEMATICA.md).
+
 ## Non-block supplies
 
 The **Supply** page contains **Non-blocks from shulkers**, alongside the other source choices. With it off, pearls, rockets and ordinary food cannot be withdrawn automatically from carried or ender shulkers. Eligible copies in ordinary main inventory can still refill the hand. Placeable block items retain shulker supplies, including netherrack and other blocks without transformation families. Items that place blocks are treated as block items even if they have another use.

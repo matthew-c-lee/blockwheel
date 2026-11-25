@@ -75,6 +75,7 @@ public final class RestockClientTests implements FabricClientGameTest {
 
                 seed(context, server, connection, player -> {
                     player.getInventory().setItem(0, new ItemStack(Items.COBBLESTONE_STAIRS, 10));
+                    player.getInventory().setItem(Inventory.SLOT_OFFHAND, new ItemStack(Items.COBBLESTONE_SLAB, 4));
                     player.getInventory().setItem(9, new ItemStack(Items.COBBLESTONE, 20));
                     player.getEnderChestInventory().setItem(0, ShulkerSupplyGameTests.box(true, new ItemStack(Items.COBBLESTONE, 1)));
                 });
@@ -84,21 +85,23 @@ public final class RestockClientTests implements FabricClientGameTest {
                 context.getInput().releaseKey(BlockwheelClient.FILL_NAMED_SHULKERS);
                 context.waitFor(client -> client.player.getInventory().getItem(9).isEmpty());
                 if (!server.computeOnServer(value -> inside(connection.getServerPlayer().getEnderChestInventory().getItem(0)) == 21
-                        && connection.getServerPlayer().getMainHandItem().getCount() == 10)) throw new AssertionError("Quick dump consumed the hotbar");
+                        && connection.getServerPlayer().getMainHandItem().getCount() == 10
+                        && connection.getServerPlayer().getOffhandItem().getCount() == 4)) throw new AssertionError("Quick dump consumed held items");
                 server.runOnServer(value -> { connection.getServerPlayer().getInventory().setItem(9, new ItemStack(Items.COBBLESTONE, 20)); BuilderController.sync(connection.getServerPlayer()); });
                 connection.waitForClientboundPackets(); context.waitTicks(2);
                 context.getInput().holdKey(BlockwheelClient.FILL_NAMED_SHULKERS);
-                context.waitFor(client -> client.player.getMainHandItem().isEmpty() && client.player.getInventory().getItem(9).isEmpty());
-                if (!server.computeOnServer(value -> inside(connection.getServerPlayer().getEnderChestInventory().getItem(0)) == 51))
-                    throw new AssertionError("Held dump hotkey did not include Builder hotbar coercion");
+                context.waitFor(client -> client.player.getMainHandItem().isEmpty() && client.player.getOffhandItem().isEmpty()
+                        && client.player.getInventory().getItem(9).isEmpty());
+                if (!server.computeOnServer(value -> inside(connection.getServerPlayer().getEnderChestInventory().getItem(0)) == 53))
+                    throw new AssertionError("Held dump hotkey did not include Builder hotbar and offhand coercion");
                 server.runOnServer(value -> { connection.getServerPlayer().getInventory().setItem(9, new ItemStack(Items.COBBLESTONE, 4)); BuilderController.sync(connection.getServerPlayer()); });
                 connection.waitForClientboundPackets(); context.waitTicks(5);
                 context.getInput().releaseKey(BlockwheelClient.FILL_NAMED_SHULKERS); context.waitTicks(4);
                 if (!server.computeOnServer(value -> connection.getServerPlayer().getInventory().getItem(9).getCount() == 4
-                        && inside(connection.getServerPlayer().getEnderChestInventory().getItem(0)) == 51))
+                        && inside(connection.getServerPlayer().getEnderChestInventory().getItem(0)) == 53))
                     throw new AssertionError("Held dump repeated while held or fired again on release");
                 context.getInput().pressKey(GLFW.GLFW_KEY_N); context.waitFor(client -> client.player.getInventory().getItem(9).isEmpty());
-                if (!server.computeOnServer(value -> inside(connection.getServerPlayer().getEnderChestInventory().getItem(0)) == 55)) throw new AssertionError("Second short dump release failed");
+                if (!server.computeOnServer(value -> inside(connection.getServerPlayer().getEnderChestInventory().getItem(0)) == 57)) throw new AssertionError("Second short dump release failed");
 
                 var supply = BuilderClient.settings().withFeature(Feature.SHULKER_SUPPLY, true);
                 context.runOnClient(client -> BuilderClient.request(supply)); context.waitFor(client -> BuilderClient.settings().equals(supply));
