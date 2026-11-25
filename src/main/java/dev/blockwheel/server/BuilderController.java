@@ -209,7 +209,7 @@ public final class BuilderController {
     /** Called only after a successful use or completed consumption, never for inventory moves/drops. */
     public void afterUse(ServerPlayer player, int slot, ItemStack previous) {
         if (!active(player, Feature.RESTOCK) || !usable(player) || player.containerMenu != player.inventoryMenu
-                || !player.containerMenu.getCarried().isEmpty() || player.getInventory().getSelectedSlot() != slot
+                || !player.containerMenu.getCarried().isEmpty() || !BuilderInventory.isRestockSlot(player.getInventory(), slot)
                 || previous.isEmpty() || player.hasInfiniteMaterials()
                 || materials(player).resolve(previous) == null && !settings(player).shulkerSupply()) return;
         var current = player.getInventory().getItem(slot);

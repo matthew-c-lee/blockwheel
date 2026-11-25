@@ -2,6 +2,7 @@
 
 ## 1.0.1 — Hotfix
 
+- Fix automatic restocking after offhand placement, item use and completed eating, including the last item. Both hands use the same refill settings, supply permissions and named reserves without spending the other hand's loose items.
 - When a radial conversion cannot make one complete target, enabled Shulker Supply can retrieve existing exact targets from eligible carried or ender-chest shulkers. Two held planks can retrieve stored logs while both planks move into main inventory outside the hotbar.
 - Preserve named-box reserves and metadata, respect supply/ender permissions, and leave everything unchanged if the displaced stack cannot fit. Successful conversions retain their existing behavior.
 - Include the Minecraft version in build filenames and provide production/sources JARs with SHA-256 checksums through GitHub Actions.

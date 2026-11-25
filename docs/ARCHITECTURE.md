@@ -27,6 +27,8 @@ Manual conversion first applies held-source batching and its existing one-stack 
 
 Restock and family-aware pick request the active building shape. Shared acquisition withdraws permitted material, creates the requested form and stores exact physical change. Bounded exact withdrawal avoids overpayment when change cannot fit. A smaller fully validated output may succeed. Explicit pick permits hotbar material, including the selected source; automatic restock excludes other loose hotbar stacks.
 
+Restock accepts only the selected hotbar slot or `Inventory.SLOT_OFFHAND`. Placement/use hooks capture the actual hand slot and pre-use stack; completed consumption captures its hand before vanilla resets the use state. Both destinations share quantity, supply and capacity policies. `MaterialSupply.totalUnits` includes the offhand for conservation while source traversal continues to exclude it. The optional Tweakeroo guard owns supported items in either hand.
+
 If the manual plan produces zero, `ConversionController` may use `BuilderInventory.retrieveExact` under the Builder/Supply/Ender/server gates. It reuses exact acquisition and pick's hand-displacement finalizer: withdraw existing targets up to the radial cap, store the original held stack in slots 9–35, then commit both changes atomically. No box-family conversion, loose other-hotbar/ender withdrawal, remote deposit or overflow drop occurs. `RadialScreen` submits zero-preview selections when Supply is enabled because remote contents are server-owned. Ordinary successful conversions retain their donor policy.
 
 ## Conservative main storage
@@ -73,7 +75,7 @@ The native reach-checked pick supplies the target. Exact loose-item and Creative
 | --- | --- |
 | Item pickup after vanilla delay/owner checks | Pickup routing |
 | Completed menu click/removal | Proven hotbar-to-main normalization and cursor return |
-| Successful main-hand block/item use | Quantity restock, including last-item consumption |
+| Successful block/item use in either hand | Quantity restock into that hand, including last-item consumption |
 | Completed eating | Delayed consumable restock |
 | Server pick item | Reach-checked requested block and exact vanilla behavior |
 

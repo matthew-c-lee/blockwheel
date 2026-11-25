@@ -4,6 +4,7 @@ import com.mojang.blaze3d.platform.InputConstants;
 import dev.blockwheel.client.BlockwheelClient;
 import dev.blockwheel.client.BuilderClient;
 import dev.blockwheel.client.BuilderSettingsScreen;
+import dev.blockwheel.client.compat.TweakerooCompatibility;
 import dev.blockwheel.core.BuilderSettings;
 import dev.blockwheel.core.BuilderSettings.Feature;
 import dev.blockwheel.core.RestockSettings;
@@ -20,6 +21,7 @@ import net.minecraft.client.gui.screens.inventory.InventoryScreen;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.GameType;
@@ -128,6 +130,7 @@ public final class RestockClientTests implements FabricClientGameTest {
                 if (!server.computeOnServer(value -> inside(connection.getServerPlayer().getInventory().getItem(9)) == 19)) {
                     throw new AssertionError("Native block use did not retain its eleven-item shulker refill");
                 }
+                offhandRestock(context, server, connection);
                 persisted = BuilderClient.settings(); save = world.getWorldSave();
             }
             try (var reopened = save.open()) {
@@ -137,13 +140,68 @@ public final class RestockClientTests implements FabricClientGameTest {
                     throw new AssertionError("Custom refill preferences did not persist in player data");
                 }
             }
-            Blockwheel.LOGGER.info("Restock client tests passed: unbound hotkeys, single-press toggle/dump, native sliders/arrows, additional amount, non-block guard and saved custom settings");
+            Blockwheel.LOGGER.info("Restock client tests passed: unbound hotkeys, single-press toggle/dump, native sliders/arrows, additional amount, offhand placement/use/consumption, non-block guard and saved custom settings");
         } finally {
             context.getInput().releaseKey(BlockwheelClient.TOGGLE_BUILDER); context.getInput().releaseKey(BlockwheelClient.FILL_NAMED_SHULKERS);
             context.runOnClient(client -> {
                 BlockwheelClient.TOGGLE_BUILDER.setKey(toggle); BlockwheelClient.FILL_NAMED_SHULKERS.setKey(fill); KeyMapping.resetMapping();
                 client.options.guiScale().set(scale); client.resizeGui();
             });
+        }
+    }
+    private void offhandRestock(ClientGameTestContext context, TestServerContext server, TestServerConnection connection) {
+        // Keep the configured below-ten/add-eleven policy, including disabled non-block shulker access.
+        seed(context, server, connection, player -> {
+            player.getInventory().setItem(0, new ItemStack(Items.DIAMOND_PICKAXE));
+            player.getInventory().setItem(Inventory.SLOT_OFFHAND, new ItemStack(Items.COBBLESTONE_STAIRS, 2));
+            player.getEnderChestInventory().setItem(0, ShulkerSupplyGameTests.box(true, new ItemStack(Items.COBBLESTONE, 12)));
+        });
+        context.runOnClient(client -> {
+            if (!TweakerooCompatibility.ownsRestock(client.player, InteractionHand.OFF_HAND, client.player.getOffhandItem())
+                    || TweakerooCompatibility.ownsRestock(client.player, InteractionHand.MAIN_HAND, client.player.getMainHandItem())) {
+                throw new AssertionError("Restock compatibility did not own the supported offhand or captured tool handling");
+            }
+        });
+        var floor = server.computeOnServer(value -> {
+            var position = connection.getServerPlayer().blockPosition().offset(2, -1, 1);
+            value.overworld().setBlockAndUpdate(position, Blocks.STONE.defaultBlockState());
+            value.overworld().setBlockAndUpdate(position.above(), Blocks.AIR.defaultBlockState()); return position;
+        });
+        context.waitFor(client -> client.level.getBlockState(floor).is(Blocks.STONE));
+        context.runOnClient(client -> client.gameMode.useItemOn(client.player, InteractionHand.OFF_HAND,
+                new BlockHitResult(Vec3.atCenterOf(floor).add(0, .5, 0), Direction.UP, floor, false)));
+        context.waitFor(client -> client.level.getBlockState(floor.above()).is(Blocks.COBBLESTONE_STAIRS)
+                && client.player.getOffhandItem().is(Items.COBBLESTONE_STAIRS) && client.player.getOffhandItem().getCount() == 12);
+        if (!server.computeOnServer(value -> inside(connection.getServerPlayer().getEnderChestInventory().getItem(0)) == 1
+                && connection.getServerPlayer().getMainHandItem().is(Items.DIAMOND_PICKAXE))) {
+            throw new AssertionError("Offhand placement missed named supply or changed the main hand");
+        }
+        seed(context, server, connection, player -> {
+            player.getInventory().setItem(0, new ItemStack(Items.DIAMOND_PICKAXE));
+            player.getInventory().setItem(Inventory.SLOT_OFFHAND, new ItemStack(Items.SNOWBALL, 1));
+            player.getInventory().setItem(10, new ItemStack(Items.SNOWBALL, 16));
+            player.getEnderChestInventory().setItem(0, ShulkerSupplyGameTests.box(false, new ItemStack(Items.SNOWBALL, 16)));
+        });
+        context.runOnClient(client -> client.gameMode.useItem(client.player, InteractionHand.OFF_HAND));
+        context.waitFor(client -> client.player.getOffhandItem().is(Items.SNOWBALL) && client.player.getOffhandItem().getCount() == 11);
+        if (!server.computeOnServer(value -> connection.getServerPlayer().getInventory().getItem(10).getCount() == 5
+                && inside(connection.getServerPlayer().getEnderChestInventory().getItem(0)) == 16)) {
+            throw new AssertionError("Last-item offhand use ignored the quantity or non-block source policy");
+        }
+        seed(context, server, connection, player -> {
+            player.getFoodData().setFoodLevel(8);
+            player.getInventory().setItem(0, new ItemStack(Items.DIAMOND_PICKAXE));
+            player.getInventory().setItem(Inventory.SLOT_OFFHAND, new ItemStack(Items.BREAD, 2));
+            player.getInventory().setItem(10, new ItemStack(Items.BREAD, 20));
+        });
+        context.waitFor(client -> client.player.canEat(false)); context.getInput().lookAt(0, -75);
+        context.getInput().holdMouse(GLFW.GLFW_MOUSE_BUTTON_RIGHT);
+        try {
+            context.waitFor(client -> client.player.getOffhandItem().is(Items.BREAD) && client.player.getOffhandItem().getCount() == 12);
+        } finally { context.getInput().releaseMouse(GLFW.GLFW_MOUSE_BUTTON_RIGHT); }
+        if (!server.computeOnServer(value -> connection.getServerPlayer().getInventory().getItem(10).getCount() == 9
+                && connection.getServerPlayer().getMainHandItem().is(Items.DIAMOND_PICKAXE))) {
+            throw new AssertionError("Completed offhand eating did not restock or changed the main hand");
         }
     }
     private void slider(ClientGameTestContext context, String prefix, int count) {

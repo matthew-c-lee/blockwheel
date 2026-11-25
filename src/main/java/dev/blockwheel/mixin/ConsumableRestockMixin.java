@@ -7,6 +7,7 @@ import dev.blockwheel.core.BuilderSettings.Feature;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Inventory;
 import org.spongepowered.asm.mixin.Mixin;
 
 /** Food finishes after the initial use request; refill only after vanilla consumes the item. */
@@ -14,12 +15,13 @@ import org.spongepowered.asm.mixin.Mixin;
 public abstract class ConsumableRestockMixin {
     @WrapMethod(method = "completeUsingItem")
     private void restockAfterConsumption(Operation<Void> original) {
-        if (!((Object) this instanceof ServerPlayer player) || player.getUsedItemHand() != InteractionHand.MAIN_HAND
+        if (!((Object) this instanceof ServerPlayer player)
                 || !Blockwheel.BUILDERS.active(player, Feature.RESTOCK)) {
             original.call(); return;
         }
-        int slot = player.getInventory().getSelectedSlot();
-        var before = player.getMainHandItem().copy();
+        var hand = player.getUsedItemHand();
+        int slot = hand == InteractionHand.MAIN_HAND ? player.getInventory().getSelectedSlot() : Inventory.SLOT_OFFHAND;
+        var before = player.getItemInHand(hand).copy();
         original.call();
         Blockwheel.BUILDERS.afterUse(player, slot, before);
     }

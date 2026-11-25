@@ -1,10 +1,8 @@
 # Blockwheel
 
-<<<<<<< HEAD
 **1.0.1 — hotfix.**
-=======
+
 A Fabric mod for **Minecraft Java Edition 26.2**. Hold **R** while holding a building block, point the mouse near another shape in its family, then release **R** to convert the stack. The floating cube-shaped slots combine Minecraft's gray hotbar styling with the supplied radial reference's geometry.
->>>>>>> 6e7e577d910e26c86c43a23a7df2547c773c962b
 
 <img width="550" height="309" alt="wheel demonstration" src="https://github.com/user-attachments/assets/8e9a6eaf-b487-4091-b435-3812c669987b" />
 
@@ -34,21 +32,17 @@ Builder Mode fills the shapes already in your hotbar, stores surplus pickups as 
 
 Direct placement into main storage keeps converted blocks in the slot you choose. Shift-click instead merges converted base blocks into existing matching storage stacks before using empty slots. Stack limits and fractional leftovers still apply.
 
-<<<<<<< HEAD
-**Shulker Supply starts OFF**, including for existing players. Enable it in the settings to restock and pick from carried shulkers and, optionally, shulkers in your personal ender chest without opening either container. Unnamed boxes may empty completely; named boxes always retain one item in each occupied source slot, including duplicate item types. Their layout, color, name and other components are preserved. There are no automatic deposits.
-=======
 <img width="550" height="309" alt="builder mode compaction" src="https://github.com/user-attachments/assets/b63f7fdb-dca6-4364-b4db-db6b6c8dcd47" />
 
-**Shulker Supply starts OFF**, including for existing players. Enable it in the settings to restock and pick from carried shulkers and, optionally, shulkers in your personal ender chest without opening either container. Unnamed boxes may empty completely; named boxes always retain one item in each occupied source slot, including duplicate item types. Their layout, color, name and other components are preserved. There are no automatic deposits or changes to manual radial donors.
->>>>>>> 6e7e577d910e26c86c43a23a7df2547c773c962b
+**Shulker Supply starts OFF**, including for existing players. Enable it in the settings to restock and pick from carried shulkers and, optionally, shulkers in your personal ender chest without opening either container. Unnamed boxes may empty completely; named boxes always retain one item in each occupied source slot, including duplicate item types. Their layout, color, name and other components are preserved. There are no automatic deposits.
 
-Supply also restocks items without a conversion family, including netherrack and consumables. Those items are matched exactly, including components, and moved unchanged. Family building materials retain their existing shape conversions. Refills follow successful main-hand use, placement or completed eating; intentional drops and inventory moves remain deliberate.
+Supply also restocks items without a conversion family, including netherrack and consumables. Those items are matched exactly, including components, and moved unchanged. Family building materials retain their existing shape conversions. Refills follow successful use, placement or completed eating in **either hand**, including consumption of the last item. The refill returns to the hand that used it; intentional drops and inventory moves remain deliberate.
 
 <img width="550" height="309" alt="shulker supply example" src="https://github.com/user-attachments/assets/96b81ff1-3e3c-4089-a375-38a7d99dda3d" />
 
 Hand restocking defaults to **fewer than 6 items remaining**, adding **up to 32 additional items** per refill. Both values are configurable from 1 to 99 in **Restock**; actual stack capacity and available supplies still limit the result. Five held blocks therefore become 37, rather than being topped up to 64. The **Non-blocks from shulkers** switch can exclude pearls, rockets and food from carried/ender shulker refills while retaining loose-inventory refills and building-block supplies. It starts on, preserving the existing behavior when Shulker Supply is enabled. See [hand restock settings](docs/RESTOCK.md).
 
-Blockwheel performs its own server-side restocking and does not read Tweakeroo's item filters, threshold or quantity. Tweakeroo is optional; its compatibility guard only prevents competing restocks while Builder Mode owns the main hand.
+Blockwheel performs its own server-side restocking and does not read Tweakeroo's item filters, threshold or quantity. Tweakeroo is optional; its compatibility guard prevents competing restocks while Builder Mode owns the affected main hand or offhand.
 
 Pick block also fetches non-transformable items by exact match. Existing hotbar and main-inventory matches keep vanilla behavior; enabled supplies add carried shulkers, loose personal ender chest items and shulkers inside that ender chest. Remote access uses the existing player and server gates, and named boxes retain their protected slots.
 

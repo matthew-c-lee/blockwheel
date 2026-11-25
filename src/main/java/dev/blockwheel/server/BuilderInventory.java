@@ -241,7 +241,7 @@ public final class BuilderInventory {
     }
 
     public Plan restock(Inventory inventory, Container ender, MaterialSupply.Policy policy, int slot, ItemStack reference, int amount) {
-        if (reference.isEmpty() || slot < 0 || slot > 8 || inventory.getSelectedSlot() != slot) return null;
+        if (reference.isEmpty() || !isRestockSlot(inventory, slot)) return null;
         var material = materials.resolve(reference);
         var trial = new InventoryTransaction(inventory, policy.shulkers() && policy.ender() ? ender : null);
         ItemStack held = trial.get(slot);
@@ -256,6 +256,11 @@ public final class BuilderInventory {
         return acquire(trial, material, wanted, policy, (candidate, count) -> {
             candidate.set(slot, reference.copyWithCount(candidate.get(slot).getCount() + count)); return true;
         });
+    }
+
+    /** Restock only the selected main hand or offhand, never inactive hotbar/storage/equipment slots. */
+    public static boolean isRestockSlot(Inventory inventory, int slot) {
+        return slot == Inventory.SLOT_OFFHAND || slot >= 0 && slot < 9 && inventory.getSelectedSlot() == slot;
     }
 
     public Plan pick(Inventory inventory, int slot, Item target) {

@@ -4,7 +4,7 @@ Open **Mods → Blockwheel → Configure → Restock**, or right-click the Build
 
 | Setting | Default | Behavior |
 | --- | --- | --- |
-| Hand restock | On when Builder Mode is enabled | Refill after successful main-hand use, placement or completed consumption |
+| Hand restock | On when Builder Mode is enabled | Refill the affected main hand or offhand after successful use, placement or completed consumption |
 | Restock below | 6 | Refill when fewer than this many items remain; 1 means only when empty |
 | Add up to | 32 | Maximum additional items per refill, rather than the final stack size |
 | Non-blocks from shulkers (Supply page) | On | Permit carried and ender shulkers to refill non-block items when Shulker Supply is enabled |
@@ -12,6 +12,8 @@ Open **Mods → Blockwheel → Configure → Restock**, or right-click the Build
 Both numbers range from 1 to 99. The sliders also support left/right arrow keys in one-item steps. Requests are validated and saved by the server; changes survive world reopen, death and reconnect alongside the existing feature preferences. Older player data receives the new numeric defaults without changing its feature switches.
 
 At the defaults, six remaining items do not trigger a refill. Five remaining items plus sufficient supply become 37. An empty hand receives up to 32 items. If only nine compatible items are available, five become 14. A sixteen-item stack such as snowballs is still capped at sixteen, regardless of the configured refill amount.
+
+Both hands use these settings independently. Placing a block, throwing an item or finishing food in the offhand refills that offhand, including after its last item is consumed. The selected main-hand stack stays in place. The offhand is a refill destination, not a supply source for the other hand; loose hotbar and equipment stacks are not donors.
 
 Refills use the existing ordered source planner, family ratios, named-slot reserves and physical change. Unsafe or unavailable refills leave the inventory unchanged. Drops, intentional slot changes and inventory moves do not trigger them. The quantity setting applies to hand restocking; pickup routing, pick block and manual radial conversions retain their own existing limits.
 
@@ -23,9 +25,9 @@ The switch applies only to automatic hand restocking. Explicit pick block and ma
 
 ## Tweakeroo
 
-Tweakeroo is optional. Blockwheel obtains and converts material on the server itself; it does not call Tweakeroo to fetch stacks or read Tweakeroo's restock item filters, threshold or amount. These Blockwheel settings control the main hand while Builder Mode and Hand restock are active.
+Tweakeroo is optional. Blockwheel obtains and converts material on the server itself; it does not call Tweakeroo to fetch stacks or read Tweakeroo's restock item filters, threshold or amount. These Blockwheel settings control supported items in either hand while Builder Mode and Hand restock are active.
 
-If Tweakeroo is installed, a narrow compatibility guard prevents both mods from restocking the same controlled hand. Turning off Builder Mode or Hand restock returns that behavior to Tweakeroo. Its unrelated features and offhand/tool handling remain its own. See [Tweakeroo coordination](TWEAKEROO.md).
+If Tweakeroo is installed, a narrow compatibility guard prevents both mods from restocking the same controlled hand, including the offhand. Turning off Builder Mode or Hand restock returns that behavior to Tweakeroo. Its unrelated features and tool handling remain its own. See [Tweakeroo coordination](TWEAKEROO.md).
 
 ## Hotkeys
 

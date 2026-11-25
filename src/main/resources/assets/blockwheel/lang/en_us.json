@@ -30,7 +30,7 @@
   "ui.blockwheel.builder.normalize": "Compact main inventory",
   "ui.blockwheel.builder.normalize.tooltip": "Store building materials in their base forms as you move them through main inventory. With experimental wood, small amounts become planks and suitable batches become logs.",
   "ui.blockwheel.builder.restock": "Hand restock",
-  "ui.blockwheel.builder.restock.tooltip": "Add more of the item in your hand after you use it. Other hotbar slots are left alone. The Supply page lets you include shulkers and your ender chest.",
+  "ui.blockwheel.builder.restock.tooltip": "Refill the item you use in either hand. Other hotbar slots are left alone. The Supply page lets you include shulkers and your ender chest.",
   "ui.blockwheel.builder.pick_block": "Enhanced pick block",
   "ui.blockwheel.builder.pick_block.tooltip": "Middle-click a block to find it or make its shape from matching material. The Supply page lets pick block also look inside shulkers and your ender chest.",
   "ui.blockwheel.builder.tooltips": "Show material totals",

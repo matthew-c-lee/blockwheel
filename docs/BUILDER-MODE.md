@@ -87,7 +87,7 @@ Stripped logs/wood/stems/hyphae have no family under either setting, including t
 
 ## Hand restocking
 
-After a successful main-hand placement or item use consumes an item, Blockwheel checks the active stack. Food is checked after consumption completes. The default trigger is fewer than six remaining items, and a refill adds up to thirty-two additional items. Both values are configurable from 1 to 99 in the shared Restock tab. The actual item stack limit and available supplies still cap the result. See [RESTOCK.md](RESTOCK.md).
+After successful placement or item use consumes an item in either hand, Blockwheel checks that hand's stack and refills the same slot. Food is checked after consumption completes. The last item can refill an emptied offhand as well as an emptied main hand. The default trigger is fewer than six remaining items, and a refill adds up to thirty-two additional items. Both values are configurable from 1 to 99 in the shared Restock tab. The actual item stack limit and available supplies still cap the result. See [RESTOCK.md](RESTOCK.md).
 
 Loose donors come only from main-storage slots 9 through 35; other loose hotbar stacks remain intact. With Shulker Supply enabled, carried boxes and permitted ender chest boxes extend that supply. Each tier prefers exact-shape items, canonical bases, then other compatible family forms. It consumes only material needed for the refill and any physical change required to complete that transaction. Change is stored as base blocks where possible; unavoidable fractions stay actual family items. A safe smaller refill is allowed when a full refill cannot fit. Automatic operations do not drop change.
 

@@ -1,6 +1,7 @@
 package dev.blockwheel.server;
 
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.ItemContainerContents;
 
@@ -103,6 +104,8 @@ public final class MaterialSupply {
         if (!original) transaction.flushContainers();
         long total = 0;
         for (int slot = 0; slot < 36; slot++) total += stackUnits(original ? transaction.before(slot) : transaction.get(slot), materials, family);
+        // The offhand is a restock destination, but remains excluded from supply traversal.
+        total += stackUnits(original ? transaction.before(Inventory.SLOT_OFFHAND) : transaction.get(Inventory.SLOT_OFFHAND), materials, family);
         for (int slot = 0; slot < transaction.enderSize(); slot++) total += stackUnits(original ? transaction.beforeEnder(slot) : transaction.getEnder(slot), materials, family);
         return total;
     }
