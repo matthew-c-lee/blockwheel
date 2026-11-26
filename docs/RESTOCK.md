@@ -19,7 +19,7 @@ Refills use the existing ordered source planner, family ratios, named-slot reser
 
 ## Litematica Easy Place
 
-With optional Litematica, Hand restock also supplies a missing Easy Place block before placement. Initial acquisition uses **Add up to** and Litematica's pick-slot rules; subsequent placement uses the normal threshold. Both use the same material planner and supply gates. See [Easy Place](LITEMATICA.md).
+With optional Litematica, Hand restock also supplies a missing Easy Place block before placement. A single click waits for the supplied item and resumes placement once while the original target remains valid. Initial acquisition uses **Add up to** and Litematica's pick-slot rules; subsequent placement uses the normal threshold. Both use the same material planner and supply gates. See [Easy Place](LITEMATICA.md).
 
 ## Non-block supplies
 

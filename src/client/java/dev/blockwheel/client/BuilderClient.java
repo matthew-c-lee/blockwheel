@@ -6,6 +6,7 @@ import dev.blockwheel.core.MaterialComposition;
 import dev.blockwheel.network.BuilderPayloads;
 import dev.blockwheel.client.compat.LitematicaCompatibility;
 import net.fabricmc.fabric.api.client.item.v1.ItemTooltipCallback;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayConnectionEvents;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.client.screen.v1.ScreenEvents;
@@ -73,6 +74,7 @@ public final class BuilderClient {
     }
 
     public static void initialize() {
+        ClientTickEvents.END_CLIENT_TICK.register(LitematicaCompatibility::tick);
         ClientPlayNetworking.registerGlobalReceiver(BuilderPayloads.Feedback.TYPE, (payload, context) -> {
             var client = context.client();
             var sound = switch (payload.kind()) {

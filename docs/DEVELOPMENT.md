@@ -19,8 +19,8 @@ In PowerShell use `.\gradlew.bat`. The checked-in wrapper supplies Gradle 9.5.1 
 `releaseArtifacts` builds and stages these files in `build/release/` using Gradle's actual production archive outputs:
 
 ```text
-blockwheel-1.0.2+mc26.2.jar
-blockwheel-1.0.2+mc26.2-sources.jar
+blockwheel-1.0.3+mc26.2.jar
+blockwheel-1.0.3+mc26.2-sources.jar
 SHA256SUMS.txt
 ```
 
@@ -38,7 +38,7 @@ Read-only repository permissions, a 30-minute timeout and cancellation of supers
 
 Action majors were checked against their maintainers' documentation on November 24, 2026: [checkout v7](https://github.com/actions/checkout), [setup-java v6](https://github.com/actions/setup-java), [setup-gradle v6](https://github.com/gradle/actions) and [upload-artifact v7](https://github.com/actions/upload-artifact). The Gradle action uses its documented basic cache provider.
 
-Successful verification uploads **blockwheel-1.0.2+mc26.2**, with the name derived from `gradle.properties`. In the repository, open **Actions → Build and test → successful run → Artifacts**, download/extract that bundle, then install the JAR without `-sources`. Only the two production archives and their checksums are uploaded there. Test mods, third-party mods, Minecraft assets and runtime caches cannot enter this bundle. Reports and logs are uploaded separately as **blockwheel-verification-<attempt>**, even if verification fails; installable bundles are uploaded only after success. Artifact retention is 30 days for binaries and 14 days for diagnostics, subject to repository policy.
+Successful verification uploads **blockwheel-1.0.3+mc26.2**, with the name derived from `gradle.properties`. In the repository, open **Actions → Build and test → successful run → Artifacts**, download/extract that bundle, then install the JAR without `-sources`. Only the two production archives and their checksums are uploaded there. Test mods, third-party mods, Minecraft assets and runtime caches cannot enter this bundle. Reports and logs are uploaded separately as **blockwheel-verification-<attempt>**, even if verification fails; installable bundles are uploaded only after success. Artifact retention is 30 days for binaries and 14 days for diagnostics, subject to repository policy.
 
 The repository already has `origin` configured as `https://github.com/matthew-c-lee/blockwheel.git`. After reviewing and committing the local changes, push your branch normally and open a PR if appropriate. No publishing tokens or other secrets are needed. If Actions is disabled, enable it under **Settings → Actions → General** and allow the official GitHub/Gradle actions. Manual dispatch becomes available after the workflow is present on the default branch. This workflow does not publish to GitHub Releases, Modrinth or CurseForge.
 
@@ -89,3 +89,11 @@ On November 25, 2026, the 1.0.2 update initially compiled production/client, JUn
 `runClientGameTest -PtestLitematica=true -PtestTweakeroo=true` then passed the full client suite on Windows/OpenGL at 1600×1000 with Litematica 0.28.8, MaLiLib 0.29.5 and Tweakeroo 0.29.5 loaded together. Native scenarios exercised offhand placement/use/completed eating, bulk dump holds, fence/gate scrolling and release, and both default and rewritten Easy Place with actual acquisition, placement and restocking. Initial failures identified test-fixture issues: an old assertion expected scrolling over a fence to leave it unchanged, and Litematica reloads configuration on world join. The Easy Place fixture now reapplies its options after joining and uses the upstream default direct-click policy. Focused Easy Place runs and the subsequent full run passed; no production changes were needed during this verification.
 
 The workflow's frame checks passed for **all 12 vanilla/restored/standard/HD captures** at GUI scales 2/3/4. `actionlint` and `git diff --check` passed, and both staged 1.0.2 JAR checksums matched. These are local results; no remote Actions or Linux headless run is claimed.
+
+The **1.0.3** follow-up replaces the repeated Easy Place polling with one native right click and disables Litematica's hold-to-place behavior in the fixture. This reproduced the reported failure against 1.0.2: the hand received seven cobblestone while the target remained air. The fix resumes the native handler once after authoritative inventory synchronization. The regression configures below eight/add seven, so a single click must acquire seven, place one and restock seven, leaving thirteen in hand and six stairs in the named source. Additional scenarios verify that looking toward a different ghost needing the same item, or switching slots during supply, cancels placement without another withdrawal.
+
+The broader experiment also observed an additional placement on a later, already-stocked click in Litematica 0.28.8's experimental `easyPlacePostRewrite` path. This hotfix preserves native local picking; its one-click regression targets the missing-item action and checks the final authoritative count after five further ticks. Litematica defaults to the original path.
+
+`build runGameTest releaseArtifacts` passed for 1.0.3 with **93 JUnit / 243 required server tests**, and the staged production archive reports version 1.0.3 with no test fixtures, nested dependencies or Minecraft assets.
+
+The same invocation's full `runClientGameTest -PtestLitematica=true -PtestTweakeroo=true` suite passed on Windows/OpenGL, including single-click acquisition/placement/restock and target/slot cancellation in both Easy Place paths. All **12 frame checks**, both release checksums, `actionlint` and `git diff --check` passed. No remote Actions run was launched or observed.

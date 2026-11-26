@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.3 — Easy Place single-click hotfix
+
+- Finish the original Easy Place click after a missing item arrives from supply. Resume Litematica once with the server-confirmed hand stack, including when the activation button has already been released and hold-to-place is disabled.
+- Cancel delayed placement if the original target, selected slot, world, settings or inventory context changes. Keep native placement checks, orientation and duplicate-placement protection.
+- Replace repeated Easy Place calls in the integration fixture with single native right clicks, and cover cancellation after target or slot changes.
+
 ## 1.0.2 — Easy Place, bulk deposits and fence gates
 
 - Let Litematica Easy Place request missing building items through Hand restock, using the configured refill amount, compatible family material and enabled carried/ender shulker supplies. Litematica keeps its own pick slots and placement behavior; all inventory changes remain server-authoritative.

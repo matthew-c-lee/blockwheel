@@ -1,6 +1,6 @@
 # Blockwheel
 
-**1.0.2 — Easy Place, bulk deposits and fence gates.**
+**1.0.3 — Easy Place single-click hotfix.**
 
 A Fabric mod for **Minecraft Java Edition 26.2**. Hold **R** while holding a building block, point the mouse near another shape in its family, then release **R** to convert the stack. The floating cube-shaped slots combine Minecraft's gray hotbar styling with the supplied radial reference's geometry.
 
@@ -9,7 +9,7 @@ A Fabric mod for **Minecraft Java Edition 26.2**. Hold **R** while holding a bui
 ## Install
 
 1. Install Fabric Loader **0.19.5 or newer** for Minecraft **26.2**, with **Java 25**.
-2. Put `blockwheel-1.0.2+mc26.2.jar` and **Fabric API 0.160.0+26.2 or newer for 26.2** in your instance's `mods` folder.
+2. Put `blockwheel-1.0.3+mc26.2.jar` and **Fabric API 0.160.0+26.2 or newer for 26.2** in your instance's `mods` folder.
 3. For multiplayer, install both mods on the server as well. Singleplayer includes its own server automatically.
 
 Use a Fabric API build intended for **26.2**. This release does not target Bedrock, Forge, NeoForge, 26.1 or 26.3.
@@ -169,11 +169,11 @@ Install JDK 25 and set `JAVA_HOME` to its installation directory, or put its `bi
 ./gradlew runClientGameTest -PtestLitematica=true
 ```
 
-On Windows use `.\gradlew.bat`. `build` runs JUnit and Fabric server GameTests and writes production and sources JARs to `build/libs/`; `runGameTest` also runs the server integration suite on its own. `releaseArtifacts` builds and stages only those two JARs and `SHA256SUMS.txt` in `build/release/`. The installable file is `blockwheel-1.0.2+mc26.2.jar`; its internal mod version is `1.0.2`. No local tool paths or previous caches are required.
+On Windows use `.\gradlew.bat`. `build` runs JUnit and Fabric server GameTests and writes production and sources JARs to `build/libs/`; `runGameTest` also runs the server integration suite on its own. `releaseArtifacts` builds and stages only those two JARs and `SHA256SUMS.txt` in `build/release/`. The installable file is `blockwheel-1.0.3+mc26.2.jar`; its internal mod version is `1.0.3`. No local tool paths or previous caches are required.
 
 The client test needs an OpenGL-capable display and a **1600×1000** viewport. Tests include a button form added entirely through data and a registered modded family with smaller stack limits and a three-unit flooring shape. Client scenarios cover inventory controls, native gameplay packets, saved preferences, dedicated-server reconnection and the radial. Test entrypoints, test data and optional compatibility dependencies are excluded from the release JAR.
 
-GitHub Actions runs the build, unit tests and server GameTests on every push/PR and manual dispatch. In **Actions → Build and test → successful run → Artifacts**, download **blockwheel-1.0.2+mc26.2**, extract it, and install the JAR without `-sources`. Client/render tests are opt-in under **Run workflow → client_tests**, with baseline, Mod Menu, Tweakeroo or Litematica profiles; CI uses Xvfb/Mesa and checks captured frames. See [development and CI](docs/DEVELOPMENT.md) for setup, artifact contents and current validation limits.
+GitHub Actions runs the build, unit tests and server GameTests on every push/PR and manual dispatch. In **Actions → Build and test → successful run → Artifacts**, download **blockwheel-1.0.3+mc26.2**, extract it, and install the JAR without `-sources`. Client/render tests are opt-in under **Run workflow → client_tests**, with baseline, Mod Menu, Tweakeroo or Litematica profiles; CI uses Xvfb/Mesa and checks captured frames. See [development and CI](docs/DEVELOPMENT.md) for setup, artifact contents and current validation limits.
 
 The hotbar fixture also reloads synthetic standard/HD resource packs, checks their border profiles and restores vanilla. Screenshot checks read native captures without editing them:
 
